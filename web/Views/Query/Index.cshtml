@@ -1,0 +1,771 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="/build/images/favicon.png?v=AybFTZHbqYgFVW98rWs9eFczD7Y5a_rAu3gK2dxSHF0">
+
+    <title>臺南市政府警察局A3交通事故案件申請系統</title>
+    <!-- Bootstrap core CSS -->
+    <link href="/lib/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/lib/bootstrap/5.1.3/js/bootstrap.min.js" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/lib/jquery.gritter/css/jquery.gritter.css">
+    <link rel="stylesheet" href="/build/fonts/fontawesome-free-6.1.1-web/css/all.min.css">
+
+    <link rel="stylesheet" type="text/css" href="/lib/jquery.nanoscroller/nanoscroller.css">
+    <link rel="stylesheet" type="text/css" href="/lib/bootstrap.switch/bootstrap-switch.css">
+    <link rel="stylesheet" type="text/css" href="/lib/bootstrap.datetimepicker/css/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" type="text/css" href="/lib/jquery.select2/select2.css">
+    <link rel="stylesheet" type="text/css" href="/lib/bootstrap.slider/css/slider.css">
+    <link rel="stylesheet" type="text/css" href="/lib/jquery.datatables/bootstrap-adapter/css/datatables.css">
+    <!-- DateRange -->
+    <link rel="stylesheet" type="text/css" href="/lib/bootstrap.daterangepicker/daterangepicker-bs3.css">
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" href="/build/css/style_meng.min.css?v=6mwBACUshZi83YRcE-FG1jeELHwFk18RljKEO-hKqMc">
+    <link rel="stylesheet" href="/build/css/StyleFrontStage.min.css?v=PV4TrKGYehQzynt1b9Q3WxjhN1HQulqUrlc0hj0iWs8">
+    <link rel="stylesheet" href="/build/css/pygments.css">
+    <link rel="stylesheet" type="text/css" href="/lib/jquery.nanoscroller/nanoscroller.css">
+    <link href="/lib/jquery.icheck/skins/square/blue.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/lib/bootstrap.multiselect/css/bootstrap-multiselect.css">
+    <link rel="stylesheet" type="text/css" href="/lib/jquery.multiselect/css/multi-select.css">
+
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-ui/jquery-ui.min.css">
+
+
+
+
+
+
+    <style type="text/css">
+        .jqstooltip {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            visibility: hidden;
+            background: rgb(0, 0, 0) transparent;
+            background-color: rgba(0,0,0,0.6);
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);
+            -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";
+            color: white;
+            font: 10px arial, san serif;
+            text-align: left;
+            white-space: nowrap;
+            padding: 5px;
+            border: 1px solid white;
+            z-index: 10000;
+        }
+
+        .jqsfield {
+            color: white;
+            font: 10px arial, san serif;
+            text-align: left;
+        }</style>
+</head>
+<!-- Global IE fix to avoid layout crash when single word size wider than column width -->
+<!--[if IE]><style type="text/css"> body {word-wrap: break-word;}</style><![endif]-->
+<body id="bodyPage" style="overflow-y: auto; opacity: 1; margin-left: 0px;" cz-shortcut-listen="true">
+    <!-- 訊息顯示視窗 -->
+    <div class="modal fade need-custom-backdrop" data-bs-backdrop="static" style="z-index: 2100" id="modal-info">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-light">
+                    <h3 class="modal-title" id="InfoModalTitle"></h3>
+                    <button type="button" class="btn-close btn-close-white" aria-hidden="true" onclick="$('#modal-info').modal('hide');"></button>
+                </div>
+                <div class="modal-body form">
+                    <div class="row-small-gutters">
+                        <h3 id="InfoModalMessage"></h3>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-flat" onclick="$('#modal-info').modal('hide');">關閉</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 訊息顯示視窗 -->
+    <!-- 顯示上傳進度視窗 -->
+    <div class="modal fade need-custom-backdrop" style="z-index: 2000" id="modal-uploading">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-light">
+                    <h3>上傳中</h3>
+                </div>
+                <div class="modal-body form">
+                    <div class="row-small-gutters">
+                        <div class="progress progress-striped active" style="margin-top: 20px;">
+                            <div id="UploadProgressBar" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                                <span class="sr-only"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-flat" data-bs-dismiss="modal" onclick="$('#modal-uploading').modal('hide'); CancelUpload();">取消上傳</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 顯示上傳進度視窗 -->
+    <!-- 錯誤顯示視窗 -->
+    <div class="modal fade need-custom-backdrop" data-bs-backdrop="static" style="z-index: 3000" id="modal-error">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-light">
+                    <h3 id="ErrorModalTitle"></h3>
+                    <button type="button" class="btn-close btn-close-white" aria-hidden="true" onclick="$('#modal-error').modal('hide');"></button>
+                </div>
+                <div class="modal-body form">
+                    <div class="row-small-gutters">
+                        <h3 id="ErrorModalMessage"></h3>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-flat" onclick="$('#modal-error').modal('hide');">關閉</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 錯誤顯示視窗 -->
+
+
+
+    <div id="cl-wrapper">
+        <!-- Main Page Container -->
+        <!-- A. HEADER  -->
+        <div class="header header_md_show fixed-top">
+            <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center pt-3 pb-1">
+                <img src="/build/images/logo.png">
+                <div>
+                    <a href="index">
+                        <img src="/build/images/a3word.svg" style="height:30px">
+                        <svg version="1.1" id="Layer" width="60" height="60" style="margin-bottom:10px">
+                            <path fill="#f5bb4b" d="M28,46c4.97,0,9.48-2.02,12.74-5.28C43.98,37.46,46,32.97,46,28c0-9.94-8.06-18-18-18s-18,8.06-18,18  S18.06,46,28,46z M22,23.9l5.97-4.9L34,23.92V35H22V23.9z"></path>
+                            <path fill="#2249a6" d="M28,48c4.671,0,9.099-1.592,12.669-4.521l11.916,11.934l2.83-2.826l-11.92-11.938  C46.413,37.077,48,32.655,48,28c0-11.028-8.972-20-20-20S8,16.972,8,28S16.972,48,28,48z M28,12c8.822,0,16,7.178,16,16  c0,4.258-1.661,8.275-4.674,11.306C36.299,42.333,32.276,44,28,44c-8.822,0-16-7.178-16-16S19.178,12,28,12z"></path>
+                            <path fill="#2249a6" d="M20,28.126V37h16v-8.867l1.735,1.416l2.529-3.099L27.966,16.416L15.731,26.454l2.537,3.093L20,28.126z   M27.974,21.584L32,24.87V33h-8v-8.156L27.974,21.584z"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="header header_md_none fixed-top flex-column">
+            <div class="container-fluid d-flex flex-column align-items-center pt-3 pb-1">
+                <img src="/build/images/logo.png">
+            </div>
+            <a href="index">
+                <div class="titleBig col-12 text-center ">
+                    <img src="/build/images/a3word_white.svg" style="max-height:80%;max-width:90%">
+                </div>
+            </a>
+        </div>
+        <!-- B. MAIN -->
+        <!-- BODY -->
+        <div class="ApplicationForm ApplicationFormQuery">
+            <div class="container-fluid py-5 p-md-5">
+                <div id="popupMessage" class="popupMessageDiv position-fixed px-5 py-3 rounded-pill d-none"><span class="mx-5 fs-5 fw-bold"></span></div>
+                <div class="container d-flex justify-content-center flex-wrap">
+                    <div class="functionDiv oldCase shadow col-12 d-flex align-items-center align-items-lg-start justify-content-lg-between flex-column flex-lg-row flex-wrap">
+                        <div class="titleDiv col-12 d-flex justify-content-center p-2">
+                            <label><b>- 案件進度查詢 -</b></label>
+                        </div>
+                        <div class="col-12 d-flex justify-content-center flex-wrap" style="background: #fbf9ee;">
+                            <div class="contentDiv d-flex flex-column text-start text-md-end fs-5 fw-bold col-10 col-md-3 me-md-3 py-5">
+                                <div class="d-flex flex-column mb-4">
+                                    <label class="fs-7 text-disable">案件狀態</label>
+                                    <span id="ProcessResult">處理中</span>
+                                </div>
+                                <div id="RejectReasonDiv" class="d-flex flex-column mb-4 d-none">
+                                    <label id="RejectReason_Label" class="fs-7 text-disable">退件原因</label>
+                                    <span id="RejectReason" class="text-danger fs-5"></span>
+                                </div>
+                                <div class="d-flex flex-column mb-4">
+                                    <label class="fs-7 text-disable">申請日期</label>
+                                    <span id="ApplyDate">2023-02-23</span>
+                                </div>
+                                <div class="d-flex flex-column mb-4">
+                                    <label class="fs-7 text-disable">案件申請書序號</label>
+                                    <span id="SerialNumber">1120223A30029</span>
+                                </div>
+                                <div class="d-flex flex-column mb-4">
+                                    <label class="fs-7 text-disable">受理單位、電話、地址</label>
+                                    <span id="PrecinctData">第六分局 | 大林派出所</span>
+                                    <span id="PrecinctChildTelephone">06 2150209</span>
+                                    <span id="PrecinctChildAddress">大同路2段456號</span>
+                                </div>
+                                <div id="PickUpDiv" class="d-flex flex-column d-none" style="color:#dc3545">
+                                    <label class="fs-7 text-disable" style="color:#a82020">領件機關、電話、地址</label>
+                                    <span id="PickUpUnitName"></span>
+                                    <span id="PickUpUnitTelephone"></span>
+                                    <span id="PickUpUnitAddress"></span>
+                                </div>
+                            </div>
+                            <div class="contentDiv border-downMD-top noteFont text-normal d-flex flex-column col-10 col-md-7 ms-md-3 py-5">
+                                <div class="resultExplainDiv d-flex align-items-center">
+                                    <span>
+                                        <b>【 案件狀態 】 未處理、處理中、可領件、退件、取消申請</b>
+                                        <br>
+                                        <br>
+                                        <b>未處理：</b>Email驗證後，當日可由最下方按鈕做取消申請，並於次日開始處理。
+                                        <br>
+                                        <br>
+                                        <b>處理中：</b>案件處理中，請耐心等候審核。
+                                        <br>
+                                        <br>
+                                        <b>退&emsp;件：</b>處理完成，結果為退件，請至詳閱退件理由。
+                                        <br>
+                                        <br>
+                                        <b>可領件：</b>處理完成，結果為可領件，會發送領件電子郵件，請攜帶身分證，親臨處理單位領取申請項目。於接獲領件通知1個月內，應至領件機關領件，逾期領件者，須重新申請。
+                                        <br>
+                                        <br>
+                                        <b>取消申請：</b>此次申請已取消，若要需再次申請資料，請重新填寫申請。
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="d-none visually-hidden">
+                            </div>
+                        </div>
+                        <form id="form-update" class="col-12 d-flex flex-wrap justify-content-center" autocomplete="off">
+                            <div class="d-none visually-hidden">
+                                <input type="text" id="AppInput_Id" name="AppInput.Id" value="6de265cd-2048-496b-bd89-2d36f8ea0cc4">
+                            </div>
+                            <div id="CancelDiv" class="contentDiv col-12 p-3 d-flex justify-content-center d-none" style="background: #e9ecef;">
+                                <div class="d-flex flex-column col-10 col-md-7 col-lg-4 p-3">
+                                    <div class="d-flex flex-column pb-1 mb-3 border-bottom fs-5">
+                                        <label><b>取消申請填寫欄位：</b></label>
+                                    </div>
+                                    <div class="d-flex flex-column mb-3">
+                                        <label>(申請人) 身分證字號 / 護照號碼：</label>
+                                        <div class="radioDiv d-flex justify-content-between align-items-center flex-wrap">
+                                            <div>
+                                                <input name="ApplicantIsCitizen" class="forIsSamePersonListener" type="radio" value="true">
+                                                <span class="me-3">本國人</span>
+                                            </div>
+                                            <div>
+                                                <input name="ApplicantIsCitizen" class="forIsSamePersonListener" type="radio" value="false">
+                                                <span>外國人</span>
+                                            </div>
+                                        </div>
+                                        <input id="ApplicantIdentityNumber">
+                                        <span class="text-danger" id="ApplicantIdentityNumber_ErrorSpan"></span>
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="d-flex flex-column mb-3">
+                                        <label>驗證碼：</label>
+                                        <div class="d-none visually-hidden">
+                                            <input id="id" name="id" type="text">
+                                        </div>
+                                        <input id="code" name="code" type="text">
+                                        <div class="mt-1">
+                                            <img name="ValidateCode" src="data:image/jpeg;base64,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" style="width:150px">
+                                            <a onclick="GetValidateCode();"><i class="fa-solid fa-rotate-right"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="buttonDiv_Cancel" class="buttonDiv col-12 d-flex justify-content-center p-2 d-none" onclick="confirmModal()">
+                                取消申請
+                            </div>
+                            <div id="buttonDiv_Notice" class="buttonDiv col-12 d-flex justify-content-center p-2 d-none" data-bs-toggle="modal" data-bs-target="#modal-info" onclick="noticeModal()">
+                                領件須知
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- C. Footer -->
+        <div class="noticeDiv">
+            <div class="container d-flex flex-column align-items-start align-items-sm-center pt-3 pb-5 px-5 fw-semibold">
+                <label class="fs-5" style="color:#ffcd6d;letter-spacing: 0.2rem;"><b>臺南市政府警察局</b></label>
+                <span class="noteFont text-white">地址：730207 臺南市新營區中正路3號</span>
+                <span class="noteFont text-white">總機：06-6322210、06-6322140 ( 警局總機只能撥入不能撥出 )</span>
+                <span class="noteFont text-white">臺南市政府警察局 版權所有 © 2022</span>
+                <span class="noteFont text-white">最佳瀏覽解析度為 1920 * 1080，建議使用瀏覽器：Chrome、Firefox、Edge</span>
+                <span class="noteFont text-white">若對網站有任何疑問，請於上班日(除國定例假日外，週一至週五08:00-12:00、13:30-17:30)</span>
+                <span class="noteFont text-white">來電06-2626013洽本局交通警察大隊事故處理組。</span>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="/lib/jquery.js"></script>
+    <script type="text/javascript" src="/lib/jquery.nanoscroller/jquery.nanoscroller.js"></script>
+    <script type="text/javascript" src="/lib/jquery.sparkline/jquery.sparkline.min.js"></script>
+    <script type="text/javascript" src="/lib/jquery-ui/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/lib/jquery.nestable/jquery.nestable.js"></script>
+    <script type="text/javascript" src="/lib/bootstrap.switch/bootstrap-switch.min.js"></script>
+    <script type="text/javascript" src="/lib/bootstrap.datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript" src="/lib/jquery.select2/select2.min.js"></script>
+    <script type="text/javascript" src="/lib/bootstrap.slider/js/bootstrap-slider.js"></script>
+    <script type="text/javascript" src="/lib/jquery.gritter/js/jquery.gritter.js"></script>
+    <script src="/lib/bootstrap.slider/js/bootstrap-slider.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/lib/bootstrap.switch/bootstrap-switch.js"></script>
+    <script type="text/javascript" src="/lib/jquery.icheck/icheck.min.js"></script>
+    <script type="text/javascript" src="/lib/bootstrap.daterangepicker/moment.min.js"></script>
+    <script type="text/javascript" src="/lib/bootstrap.daterangepicker/daterangepicker.js"></script>
+    <script type="text/javascript" src="/lib/signature_pad.umd.js"></script>
+    <script type="text/javascript" src="/lib/behaviour/general.js"></script>
+    <script type="text/javascript" src="/lib/bootstrap.multiselect/js/bootstrap-multiselect.js"></script>
+    <script type="text/javascript" src="/lib/jquery.multiselect/js/jquery.multi-select.js"></script>
+    <script type="text/javascript" src="/lib/jquery.quicksearch/jquery.quicksearch.js"></script>
+    <script type="text/javascript" src="/lib/bootstrap/5.1.3/js/bootstrap.min.js"></script>
+
+
+
+    <!-- Datatables -->
+    <script src="/js/datatables.net/jquery.dataTables.min.js?v=6hwR69XgaDwyZ_4rzUPv5ivnm-36jfKQad84XFrAdng"></script>
+    <script src="/js/datatables.net-bs/dataTables.bootstrap.min.js?v=yQllR101mg7IS6aGyVjgCHncDCxfGI7TWNO0bnDPhpA"></script>
+    <script src="/js/datatables.net-responsive/dataTables.responsive.min.js?v=kpk4z0xrjZhh74VaWYKavvMysoUfBs4V-QlpMGtD3zI"></script>
+    <script src="/js/datatables.net-responsive-bs/responsive.bootstrap.min.js?v=8m_2TyP9JfjrkY9NGG0xf5rLf9HMFGRsVuvLKyrQG-g"></script>
+    <script src="/js/datatables.net/ColReorderWithResize.min.js?v=6pydQaI8Nk_zSo54DnzS8IsFF0_UKTzJ9_OKr4gdLOI"></script>
+    <!-- 驗證API回傳值功能 -->
+    @* <script src="/build/js/VerifyApi.min.js?v=5dLGzBVHFpWhMixEg5e8tQa1UDqycvNDX_hrdzkRo_k"></script> *@
+    <!-- Validate -->
+    <script src="/lib/jquery-validation/dist/jquery.validate.min.js?v=eItLFOyfQ4d_OGzEnGchi2ZMVF8EhGgzS0k7fSOPifQ"></script>
+    <script src="/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js?v=9GycpJnliUjJDVDqP0UEu_bsm9U-3dnQUH8-3W10vkY"></script>
+
+
+    <script>
+        var rootDir = "/";
+
+        $(function () {
+
+            //頁籤位置
+            let PageLabel = $('.cl-vnavigation').find('a');
+
+            for (let i = 0; i < PageLabel.length; i++) {
+                if (location.href == $(PageLabel[i]).prop('href')) {
+                    $(PageLabel[i]).closest('li').addClass("active");
+                    break;
+                }
+            }
+
+            //初始化general.js的資料
+            App.init();
+
+            $(".cl-toggle").click(function (e) {
+                var ul = $(".cl-vnavigation");
+                ul.slideToggle(300, 'swing', function () {
+                });
+                e.preventDefault();
+            });
+
+        });
+
+    </script>
+
+    <script type="text/javascript">
+        //關閉DataTable顯示錯誤提示視窗的功能
+        $.fn.dataTable.ext.errMode = 'none';
+
+        //初始化VerifyApi
+        VerifyApi_Initialization(
+            '伺服器過於忙碌，暫時無法取得資料',
+            '發生錯誤，請嘗試重新整理',
+            '有其他資料參考，無法刪除',
+            '新增失敗',
+            '修改失敗',
+            '刪除失敗',
+            '查詢失敗',
+            '下載失敗',
+            '上傳失敗',
+            '警告',
+            '發現高風險文字，例如：「<!」、「&#」...等，請檢查輸入的文字',
+            rootDir + 'AccessDenied',
+            rootDir + 'Management/Login',
+            rootDir + 'Error',
+            function (Title, Message) {
+                if (Title == '' || Title == ' ')
+                    $('#ErrorModalTitle').html('&ensp;');
+                else
+                    $('#ErrorModalTitle').text(Title);
+
+                $('#ErrorModalMessage').text(Message);
+                $('#modal-error').modal('show');
+            }
+        );
+
+        //need-custom-backdrop為打開複數modal時，需要不同高度的背景層
+        //在跳出視窗後，才可以調整背景Z軸高度
+        $(".need-custom-backdrop").on('shown.bs.modal', function (event) {
+            let z = $(this).css('z-index');
+            $('.modal-backdrop').last().css('z-index', z - 50);
+        });
+
+        //寫入接洽人員與電話
+        $('#ContactPersonName').text("葉先生");
+        $('#Telephone').text("06-2626013");
+
+    </script>
+
+
+    <script type="text/javascript">
+        var ShowTelephone = "06-2626013";// 接洽人員聯絡電話
+        var ModifyApplicationForm = "False"; //是否可以修改
+        var IsGeneral = "False" == "True";
+
+        $(function () {
+            //驗證碼：十分鐘自動換 (需再優化重製時時間也重製)
+            setInterval("GetValidateCode()", "600000");
+
+            //監聽：申請人 身分證字號、護照號碼
+            $("#ApplicantIdentityNumber").bind("input propertychange", function (event) {
+                let IsCitizen = $('input[name="ApplicantIsCitizen"]:checked').val(); //是否為本國人
+                let ID = $("#ApplicantIdentityNumber").val(); //輸入的身分證字號或護照號碼
+                let ErrorSpan = $('#ApplicantIdentityNumber_ErrorSpan'); //錯誤訊息
+                CheckID(IsCitizen, ID, ErrorSpan);
+            });
+
+            //監聽：申請人 身分證字號/護照號碼 input radio 換值
+            //觸發：申請人 身分證字號/護照號碼 input 清空
+            //原因：申請人 避免使用者先輸入ID，再換radio選項，繞過監聽ID結果。
+            $('input[name="ApplicantIsCitizen"]').change(function () {
+                $('#ApplicantIdentityNumber').val('');
+                CheckID($('input[name="ApplicantIsCitizen"]:checked').val(), $("#ApplicantIdentityNumber").val(), $('#ApplicantIdentityNumber_ErrorSpan'));
+            })
+
+            //設定自定義錯誤視窗 (不知如何使用!!!!)
+            VerifyApi_ShowCustomMessageWindow = function (Result) {
+                $('#ErrorModalTitle').text("申請送出失敗");
+                $('#ErrorModalMessage').text(Result.custom_result);
+                $('#modal-error').modal('show');
+            };
+
+            //寫入頁面資料
+            ReloadCase();
+
+        });
+
+        //驗證碼取得器
+        function GetValidateCode() {
+            //清除驗證碼答案
+            $('input[name="code"]').val("");
+
+            $.ajax({
+                url: location.pathname + '?handler=ValidateCode',
+                type: 'GET',
+                async: false,
+                success: function (val) {
+                    if (val != null && typeof (val) == 'object' && val.apiresult == "Success") {
+                        let tempEdit = val.data;//拆開data包裝
+
+                        //處理資料
+                        $("input[name='id']").val(val.data.id);
+                        $("img[name='ValidateCode']").attr("src", "data:image/jpeg;base64," + val.data.img);
+                        ValidateCodeID = val.data.id;
+
+                    }
+                },
+                complete: function (jqXHR, textStatus) {
+                    VerifyApi(jqXHR);//檢查回傳值
+                }
+            });
+
+            console.log(val.data.img);
+        };
+
+        //檢查身分證
+        function CheckTwID(idStr) {
+            //依照字母的編號排列，存入陣列備用。
+            let letters = new Array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'W', 'Z', 'I', 'O');
+
+            // 儲存各個乘數
+            let multiply = new Array(1, 9, 8, 7, 6, 5, 4, 3, 2, 1);
+            let nums = new Array(2);
+            let firstChar; var firstNum;
+            let lastNum; var total = 0;
+
+            // 撰寫「正規表達式」。第一個字為英文字母，
+            // 第二個字為1或2，後面跟著8個數字，不分大小寫。
+            let regExpID = /^[a-z](1|2)\d{8}$/i;
+
+            // 使用「正規表達式」檢驗格式
+            if (idStr.search(regExpID) == -1) {
+                // 基本格式錯誤 alert("請仔細填寫身份證號碼");
+                return false;
+            }
+            else {
+                // 取出第一個字元和最後一個數字。
+                firstChar = idStr.charAt(0).toUpperCase(); lastNum = idStr.charAt(9);
+            }
+
+            // 找出第一個字母對應的數字，並轉換成兩位數數字。
+            for (let i = 0; i < 26; i++) {
+                if (firstChar == letters[i]) {
+                    firstNum = i + 10;
+                    nums[0] = Math.floor(firstNum / 10);
+                    nums[1] = firstNum - (nums[0] * 10); break;
+                }
+            }
+
+            // 執行加總計算
+            for (let i = 0; i < multiply.length; i++) {
+                if (i < 2) {
+                    total += nums[i] * multiply[i];
+                }
+                else {
+                    total += parseInt(idStr.charAt(i - 1)) * multiply[i];
+                }
+            }
+
+            //若餘數為0時，則設定其檢查值為0。
+            if (total % 10 == 0) {
+                if ((total % 10) != lastNum) {
+                    return false;
+                }
+            }
+            else {
+                if ((10 - (total % 10)) != lastNum) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        //檢查護照
+        function CheckForeignID(idStr) {
+            //檢查不可大於20位數
+            if (idStr.length < 21 && idStr.length > 1) {
+                return true;
+            }
+            else
+                return false;
+        }
+
+        //身分證字號/護照號碼：ID 驗證 (IsCitizen 是否為本國人 , ID 輸入框的文字 , ErrorSpan 錯誤訊息span)
+        function CheckID(IsCitizen, ID, ErrorSpan) {
+            let ID_check = false; //檢查結果初始為 錯誤
+            ErrorSpan.children().remove(); //清除錯誤訊息
+
+            if (IsCitizen == undefined) {
+                ErrorSpan.append(`<span>請選擇是否為本國人</span>`);
+            }
+            else if (IsCitizen == 'true') {
+                ID_check = CheckTwID(ID);
+                if (ID_check == false)
+                    ErrorSpan.append(`<span>身分證字號格式錯誤</span>`);
+            }
+            else { //IsCitizen == 'false'
+                ID_check = CheckForeignID(ID);
+                if (ID_check == false)
+                    ErrorSpan.append(`<span>護照號碼格式錯誤</span>`); //原本訊息為"護照號碼不可大於20字"。
+            }
+
+
+            return ID_check; //回丟檢查結果
+        }
+
+        //回傳表單資料
+        function FormSubmit(HandlerAction) {
+            if (HandlerAction == "Cancel" && ModifyApplicationForm == 'True' && $('#ProcessResult').text() == '未處理') {
+                let CaseId = $('#AppInput_Id').val();
+                let ApplicantIsCitizen = $('input[name="ApplicantIsCitizen"]:checked').val();
+                let ApplicantIdentityNumber = $('#ApplicantIdentityNumber').val();
+                let id = $('#id').val();
+                let code = $('#code').val();
+
+                $.ajax({
+                    url: location.pathname + '?handler=' + HandlerAction,
+                    type: 'POST',
+                    dataType: "json",
+                    data: { CaseId: CaseId, ApplicantIsCitizen: ApplicantIsCitizen, ApplicantIdentityNumber: ApplicantIdentityNumber, id: id, code: code },
+                    async: false,
+                    beforeSend: function (xhr) {
+                        //取得並建立防止CSRF的參數
+                        xhr.setRequestHeader("XSRF-TOKEN", $('<input name="__RequestVerificationToken" type="hidden" value="CfDJ8ElYgKB_IgVCi_Ksky7x0E-kNn1Bd3JIPHUyKWNvItX8K74jgzi2Vmb84nVkpBEnpWFpfhyObws5O_uA3NiY4A6emAg1xiwX1TWhRbTpis23twm-j_IuLId4MDB5cB4y-bdxtc22POtPKoc2phhrN-E" />').val());
+                    },
+                    success: function (val) {
+                        if (val != null && typeof (val) == 'object' && val.apiresult == "Success") {
+                            let tempEdit = val.data;//拆開data包裝
+
+                            //處理資料
+
+                            //挑出更新成功視窗
+                            $('#popupMessage').removeClass('d-none').find('span').text('取消申請 成功');
+                            setTimeout(function () {
+                                $('#popupMessage').addClass('d-none');
+                            }, 3000
+                            );
+
+                            //資料初始化
+                            ReloadCase();
+                        }
+                    },
+                    complete: function (jqXHR, textStatus) {
+                        VerifyApi(jqXHR);//檢查回傳值
+                        GetValidateCode();//刷新驗證碼
+                        $('#modal-info').modal('hide');//關閉彈跳視窗
+                    }
+                });
+            }
+            else {
+                //此頁沒有別項功能。
+            }
+        }
+
+        //寫入頁面資料
+        function ReloadCase() {
+            let CaseId = $('#AppInput_Id').val();
+
+            $.ajax({
+                url: location.pathname + '?handler=ReloadCase',
+                type: 'POST',
+                dataType: "json",
+                data: { Id: CaseId },
+                async: false,
+                beforeSend: function (xhr) {
+                    //取得並建立防止CSRF的參數
+                    xhr.setRequestHeader("XSRF-TOKEN", $('<input name="__RequestVerificationToken" type="hidden" value="CfDJ8ElYgKB_IgVCi_Ksky7x0E-kNn1Bd3JIPHUyKWNvItX8K74jgzi2Vmb84nVkpBEnpWFpfhyObws5O_uA3NiY4A6emAg1xiwX1TWhRbTpis23twm-j_IuLId4MDB5cB4y-bdxtc22POtPKoc2phhrN-E" />').val());
+                },
+                success: function (val) {
+                    if (val != null && typeof (val) == 'object' && val.apiresult == "Success") {
+                        let tempEdit = val.data;//拆開data包裝
+
+                        //案件資料寫入
+
+                        //ProcessResult案件狀態：Z|未處理、A|處理中、B|可領件、C|退件、D|取消申請
+                        switch (tempEdit.ProcessResult) {
+                            case 'Z':
+                                $('#ProcessResult').text("未處理");
+                                $('#RejectReasonDiv').addClass("d-none");
+                                //未處理：CancelDiv顯示、取消按鈕顯示、通知領件按鈕隱藏、領件機關隱藏。
+                                $('#CancelDiv').removeClass('d-none');
+                                $('#buttonDiv_Cancel').removeClass('d-none');
+                                $('#buttonDiv_Notice').addClass('d-none');
+                                $('#PickUpDiv').addClass('d-none');
+                                break;
+                            case 'A':
+                                $('#ProcessResult').text("處理中");
+                                $('#RejectReasonDiv').addClass("d-none");
+                                //處理中、退件、取消申請：CancelDiv隱藏、取消按鈕隱藏、通知領件按鈕隱藏、領件機關隱藏。
+                                $('#CancelDiv').addClass('d-none');
+                                $('#buttonDiv_Cancel').addClass('d-none');
+                                $('#buttonDiv_Notice').addClass('d-none');
+                                $('#PickUpDiv').addClass('d-none');
+                                break;
+                            case 'B':
+                                $('#ProcessResult').text("可領件");
+                                $('#RejectReasonDiv').addClass("d-none");
+                                //可領件：退件原因隱藏，CancelDiv隱藏、取消按鈕隱藏、通知領件按鈕顯示、領件機關顯示。
+                                $('#CancelDiv').addClass('d-none');
+                                $('#buttonDiv_Cancel').addClass('d-none');
+                                $('#buttonDiv_Notice').removeClass('d-none');
+                                $('#PickUpDiv').removeClass('d-none');
+                                $('#PickUpUnitName').text(tempEdit.PickUpUnitName);
+                                $('#PickUpUnitTelephone').text(tempEdit.PickUpUnitTelephone);
+                                $('#PickUpUnitAddress').text(tempEdit.PickUpUnitAddress);
+                                break;
+                            case 'C':
+                                $('#ProcessResult').text("退件");
+                                $('#RejectReasonDiv').removeClass("d-none");
+                                $('#RejectReason').text(tempEdit.RejectReason);
+                                //處理中、退件、取消申請：CancelDiv隱藏、取消按鈕隱藏、通知領件按鈕隱藏、領件機關隱藏。
+                                $('#CancelDiv').addClass('d-none');
+                                $('#buttonDiv_Cancel').addClass('d-none');
+                                $('#buttonDiv_Notice').addClass('d-none');
+                                $('#PickUpDiv').addClass('d-none');
+                                break;
+                            case 'D':
+                                $('#ProcessResult').text("取消申請");
+                                $('#RejectReasonDiv').addClass("d-none");
+                                //處理中、退件、取消申請：CancelDiv隱藏、取消按鈕隱藏、通知領件按鈕隱藏、領件機關隱藏。
+                                $('#CancelDiv').addClass('d-none');
+                                $('#buttonDiv_Cancel').addClass('d-none');
+                                $('#buttonDiv_Notice').addClass('d-none');
+                                $('#PickUpDiv').addClass('d-none');
+                                break;
+                            default:
+                                break;
+                        }
+
+                        $('#ApplyDate').text(tempEdit.ValidationDate.substring(0, 10));
+                        $('#SerialNumber').text(tempEdit.SerialNumber);
+                        $('#PrecinctData').text(tempEdit.PrecinctName + ' | ' + tempEdit.PrecinctChildName);
+                        $('#PrecinctChildTelephone').text(tempEdit.PrecinctChildTelephone);
+                        $('#PrecinctChildAddress').text(tempEdit.PrecinctChildAddress);
+
+                        //刷新驗證碼
+                        GetValidateCode();
+                    }
+                },
+                complete: function (jqXHR, textStatus) {
+                    VerifyApi(jqXHR);//檢查回傳值
+                }
+            });
+        }
+
+        //領件須知
+        function noticeModal() {
+            //初始化
+            $('#modal-info').find('#InfoModalTitle').children().remove();
+            $('#modal-info').find('#InfoModalMessage').children().remove();
+            $('#modal-info').find('.modal-footer').find('#confirmBTN').remove();
+            //崁入文字
+            $('#modal-info').find('#InfoModalTitle').append(`<span class="px-4 fw-bold">領件須知</span>`);
+            $('#modal-info').find('#InfoModalMessage').append(`
+                    <div class="d-flex flex-column px-5 py-3">
+                        <span class="fs-6 lh-base fw-bold">領件期限：</span>
+                        <span class="fs-6 lh-base fw-normal">於接獲領件通知1個月內，應至領件機關領件，逾期領件者，須重新申請。</span>
+                        <br>
+                        <span class="fs-6 lh-base fw-bold">申請人同當事人時：</span>
+                        <span class="fs-6 lh-base fw-normal">領件應攜帶身分證明文件，並於警察機關列印之道路交通事故資料申請書(以下簡稱申請書)申請人欄位簽名或蓋章。</span>
+                        <br>
+                        <span class="fs-6 lh-base fw-bold">申請人非當事人時，領件時請注意下列事項：</span>
+                        <span class="fs-6 lh-base fw-normal">一、自行備妥委託書或於本系統網頁下載列印 (請印製成A4紙大小，俾便本局作業)，由當事人填寫與簽章，申請人於領件當日攜帶申請人、當事人身分證件(影本亦可)以供查核身分，並將當事人簽章之正本委託書交予領件機關，並於警察機關列印之申請書申請人欄位簽名或蓋章。</span>
+                        <span class="fs-6 lh-base fw-normal">二、保險業者使用本系統申請事故資料領件時，應將當事人簽章之正本委託書、當事人身分證件影本交予領件機關，並檢具保險公司證(函)件及個人身分證明文件等以供查驗(依道路交通事故處理規範第60點辦理)。</span>
+                    </dvi>
+                `);
+        }
+
+        //取消申請：再次確認視窗
+        function confirmModal() {
+            //先檢查是否有填入身分證
+            let CheckID_result = CheckID($('input[name="ApplicantIsCitizen"]:checked').val(), $("#ApplicantIdentityNumber").val(), $('#ApplicantIdentityNumber_ErrorSpan'));
+
+            if (CheckID_result) {
+                //CheckID驗證成功後，才可把"再次確認視窗"開啟。
+                $('#modal-info').modal('show')
+
+                //初始化
+                $('#modal-info').find('#InfoModalTitle').children().remove();
+                $('#modal-info').find('#InfoModalMessage').children().remove();
+                $('#modal-info').find('.modal-footer').find('#confirmBTN').remove();
+                //崁入文字
+                $('#modal-info').find('#InfoModalTitle').append(`<span class="px-4 fw-bold">確認視窗</span>`);
+                $('#modal-info').find('#InfoModalMessage').append(`
+                                <div class="d-flex flex-column px-5 py-3">
+                                    <span class="fs-6 lh-base fw-bold">「取消申請」此動作為不可逆操作!!!</span>
+                                    <span class="fs-6 lh-base">若取消申請成功後，想再申請相同案件與項目，需要重新填寫申請單。</span>
+                                </dvi>
+                            `);
+                $('#modal-info').find('.modal-footer').append(`
+                        <button id="confirmBTN" type="button" class="btn btn-primary btn-flat" onclick="FormSubmit('Cancel')">確認取消</button>
+                    `)
+            }
+
+
+        }
+
+    </script>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="/lib/behaviour/voice-commands.js"></script>
+    <script src="/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+
+
+
+    <a href="#" class="back-to-top"><i class="fa fa-angle-up"></i></a>
+</body>
+</html>

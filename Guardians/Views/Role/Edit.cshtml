@@ -1,0 +1,155 @@
+﻿@model Guardians.Models.Role
+
+
+
+
+<form asp-action="Edit">
+    @Html.HiddenFor(model => model.InitDate)
+    @Html.HiddenFor(model => model.Poster)
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="Subject" class="control-label"></label>
+        <input asp-for="Subject" class="form-control" placeholder="請輸入群組/角色名稱" required />
+        <span asp-validation-for="Subject" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Permission" class="control-label"></label>
+        <div class="containerTree"></div>
+        <input type="hidden" asp-for="Permission" class="form-control" />
+    </div>
+
+    <label asp-for="Members" class="control-label"></label>
+    <div class="row">
+        <div class="col-5">
+            <div class="form-group">
+                <select multiple id="MemberList" style="width: 100%;height: 300px;font-size: 16px;">
+                    @foreach (var item in ViewBag.unRoleMembers)
+                    {
+                        <option value="@item.Id">@item.Name</option>
+                    }
+                </select>
+                @*@Html.ListBox("MemberList", new SelectList(ViewBag.Members as IEnumerable, "Id", "Name", new {Multiple = "multiple"}))*@
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-group">
+                <div>
+                    <button type="button" id="toRight" class="btn-red btn-accent-1 border-0 btn w-100 mt-5 mb-2">
+                        <i class="ft-arrow-right"></i>
+                    </button>
+                    <button type="button" id="toLeft" class="btn-red btn-accent-1 border-0 btn  w-100">
+                        <i class="ft-arrow-left"></i>
+                    </button>
+                    @* <input type="button" value="→" id="toRight" class="btn btn-info"/><input type="button" value="←" id="toLeft" class="btn btn-info"/>*@
+                </div>
+            </div>
+        </div>
+        <div class="col-5">
+            <div class="form-group">
+                <select name="MemberListSelect" multiple id="MemberListSelect" style="width: 100%; height: 300px; font-size: 16px;">
+                    @foreach (var item in Model.Members)
+                    {
+                        <option value="@item.Id">@item.Name</option>
+                    }
+                </select>
+                <input type="hidden" id="hiddenMemberListSelect" name="hiddenMemberListSelect" />
+
+            </div>
+        </div>
+    </div>
+    <div class="form-group d-flex justify-content-center my-3">
+        <input type="submit" value="儲存更變" class="btn btn-teal btn-lighten-2 border-teal border-lighten-2 mr-1 btn-min-width" />
+        <a asp-action="Index" class="btn btn-blue-grey btn-lighten-3 border-blue-grey border-lighten-3 btn-min-width">取消</a>
+    </div>
+</form>
+
+
+
+@section Scripts {
+
+    <script src="~/treejs-master/dist/tree.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            initMemberListSelect();
+
+            $("#toRight").click(function () {
+
+                $("#MemberList").children(":selected").each(function () {
+                    $(this).appendTo("#MemberListSelect");
+                });
+                initMemberListSelect();
+            });
+
+            $("#toLeft").click(function () {
+
+                $("#MemberListSelect").children(":selected").each(function () {
+                    $(this).appendTo("#MemberList");
+                });
+                initMemberListSelect();
+            });
+
+            function initMemberListSelect() {
+                var list = '';
+                $("#MemberListSelect").children().each(function () {
+                    list += $(this).val() + ",";
+                });
+                $("#hiddenMemberListSelect").val(list);
+            }
+
+        });
+    </script>
+
+
+
+
+    <script>
+        // prettier-ignore
+        //撈資料庫裏面長出來，用VIEWBAG抓過去
+        let data =@Html.Raw(ViewBag.PermissionTreeScript);
+        //let data = [{
+        //    "id": "0", "text": "node-0",
+        //    "children": [
+        //        {
+        //            "id": "0-0", "text": "node-0-0",
+        //            "children": [
+        //                { "id": "0-0-0", "text": "node-0-0-0" },
+        //                { "id": "0-0-1", "text": "node-0-0-1" }]
+        //        },
+        //        {
+        //            "id": "0-1", "text": "node-0-1",
+        //            "children": [
+        //                { "id": "0-1-0", "text": "node-0-1-0" },
+        //                { "id": "0-1-1", "text": "node-0-1-1" }]
+        //        }, {
+        //            "id": "0-2", "text": "node-0-2",
+        //            "children": [
+        //                { "id": "0-2-0", "text": "node-0-2-0" },
+        //                { "id": "0-2-1", "text": "node-0-2-1" }]
+        //        }]
+        //}]
+        //初始化這棵樹
+        //想要全選就放ROOT那層
+        let tree = new Tree('.containerTree', {
+            //第一層是誰
+            data: data,
+            //原本第一層是root
+            //data: [{ id: '-1', text: 'root', children: data }],
+            closeDepth: 3,
+            loaded: function () {
+                //this.values = ['0-0-0', '0-1-1'];
+                this.values = [@Html.Raw("'"+Model.Permission.Replace(",","','")+"'")];
+                //this.disables = ['0-0-0', '0-0-1', '0-0-2']
+            },
+            onChange: function () {
+                //抓全部的勾選的值
+                console.log(this.values);
+                $("#Permission").val(this.values);
+            }
+        })
+    </script>
+
+}

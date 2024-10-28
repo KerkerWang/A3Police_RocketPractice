@@ -1,0 +1,55 @@
+﻿@model IEnumerable<Guardians.Models.Role>
+
+
+
+
+<p>
+    <a asp-action="Create">新增</a>
+</p>
+<div class="table-responsive">
+    <table class="table ">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Subject)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Poster)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.InitDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.UpdateDate)
+                </th>
+                <th>功能</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Subject)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Poster)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.InitDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UpdateDate)
+                    </td>
+                    <td class="">
+                        <a asp-action="Edit" asp-controller="Role" asp-route-id="@item.Id" class="btn btn-warning btn-sm mr-1">編輯</a>
+                        <form asp-action="delete" class="d-inline-block">
+                            <input type="hidden" name="Id" value="@item.Id" />
+                            <input type="submit" value="刪除" onclick="return confirm('是否確定刪除?')" class="btn btn-danger btn-sm mr-1" />
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,70 @@
+﻿@model Guardians.Models.Member
+
+
+<dl class="row">
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.MyUnit)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.MyUnit.Subject)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.JobTitle)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.JobTitle)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Account)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.Account)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Name)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.Name)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Gender)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.Gender)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Email)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.Email)
+    </dd>
+
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.TEL)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.TEL)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Memo)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.Memo)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.InitDate)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.InitDate)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.UpdateDate)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.UpdateDate)
+    </dd>
+</dl>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-teal btn-lighten-2 border-teal border-lighten-2 mr-1 btn-min-width">編輯</a>
+    <a asp-action="Index" class="btn btn-blue-grey btn-lighten-3 border-blue-grey border-lighten-3 btn-min-width">回列表</a>
+</div>

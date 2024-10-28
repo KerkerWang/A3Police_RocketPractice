@@ -1,0 +1,73 @@
+﻿@model X.PagedList.IPagedList<Guardians.Models.Member>
+@using X.PagedList
+@using X.PagedList.Mvc.Core
+
+
+<p>
+    <a asp-action="Create">新增</a>
+</p>
+<div class="table-responsive">
+
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.FirstOrDefault().Account)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.FirstOrDefault().Name)
+                </th>
+
+                <th>
+                    @Html.DisplayNameFor(model => model.FirstOrDefault().Roles)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.FirstOrDefault().InitDate)
+                </th>
+                <th>功能</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Account)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+
+                    <td>
+                        @if (item.Roles != null)
+                        {
+                            @foreach (var myRole in item.Roles)
+                            {
+                                @myRole.Subject
+                                <br />
+                            }
+                        }
+
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.InitDate)
+                    </td>
+                    <td class="">
+                        @*<a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm mr-1">查看</a>*@
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm mr-1">編輯</a>
+                        <form asp-action="delete" class="d-inline-block">
+                            <input type="hidden" name="Id" value="@item.Id" />
+                            <input type="submit" value="刪除" onclick="return confirm('是否確定刪除?')" class="btn btn-danger btn-sm mr-1" />
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@section Footer{
+    <div class="mypagination">
+        @Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page }))
+        <p>總共 @Model.TotalItemCount 筆</p>
+    </div>
+}

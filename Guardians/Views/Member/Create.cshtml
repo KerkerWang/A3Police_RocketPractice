@@ -1,0 +1,103 @@
+﻿
+@model Guardians.Models.Member
+
+<form asp-action="Create" enctype="multipart/form-data" autocomplete="off">
+    <input type="hidden" asp-for="Gender" value="0" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group d-none">
+        <label asp-for="MyUnit" class="control-label"></label>
+        <select asp-for="UnitId" class="form-control" asp-items="@ViewBag.Units">
+            @*<option selected="selected" value="">請選擇</option>*@
+        </select>
+        <span asp-validation-for="UnitId" class="text-danger"></span>
+    </div>
+   
+    @*<div class="form-group">
+            <label asp-for="JobTitle" class="control-label"></label>
+            <input asp-for="JobTitle" class="form-control"/>
+            <span asp-validation-for="JobTitle" class="text-danger"></span>
+        </div>*@
+    <div class="form-group">
+        <label asp-for="Name" class="control-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Account" class="control-label"></label>
+        <input id="account" asp-for="Account" class="form-control" />
+        <input id="btnCheck" type="button" value="檢查帳號" class="btn btn-sm btn-primary" style="margin-top: 2px" />
+        <span asp-validation-for="Account" class="text-danger" id=""></span>
+        <span id="msg_account" class="text-danger"></span>
+
+    </div>
+    <div class="form-group">
+        <label asp-for="Password" class="control-label"></label>
+        <input asp-for="Password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    @*<div class="form-group">
+            <label asp-for="PasswordSalt" class="control-label"></label>
+            <input asp-for="PasswordSalt" class="form-control" />
+            <span asp-validation-for="PasswordSalt" class="text-danger"></span>
+        </div>*@
+
+    <!--<div class="form-group">
+    <label asp-for="Gender" class="control-label"></label>
+    <select asp-for="Gender" class="form-control" asp-items="Html.GetEnumSelectList<GenderType>()">-->
+    @*<option selected="selected" value="">請選擇</option>*@
+    <!--</select>
+    <span asp-validation-for="Gender" class="text-danger"></span>
+    </div>-->
+    @*<div class="form-group">
+            <label asp-for="Email" class="control-label"></label>
+            <input asp-for="Email" class="form-control"/>
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>*@
+    <div class="form-group">
+        <label asp-for="TEL" class="control-label"></label>
+        <input asp-for="TEL" class="form-control" />
+        <span asp-validation-for="TEL" class="text-danger"></span>
+    </div>
+    @*<div class="form-group">
+            <label asp-for="MyPic" class="control-label"></label>
+            <input name="uploadImage" type="file" class="form-control" accept="image/*" />
+            <span asp-validation-for="MyPic" class="text-danger"></span>
+        </div>*@
+    <div class="form-group">
+        <label asp-for="Memo" class="control-label"></label>
+        @Html.TextAreaFor(model => model.Memo, new { @style = "height: 150px", maxlength = "200", @class = "form-control" })
+        <span asp-validation-for="Memo" class="text-danger"></span>
+    </div>
+    <div class="form-group d-flex justify-content-center my-3">
+        <input type="submit" value="建立" class="btn btn-teal btn-lighten-2 border-teal border-lighten-2 mr-1" />
+        <a asp-action="Index" class="btn btn-blue-grey btn-lighten-3 border-blue-grey border-lighten-3">取消</a>
+    </div>
+</form>
+
+@section scripts{
+    <script>
+        $(function () {
+            $(document).ready(function () {
+                $("#btnCheck").click(function () {
+                    $('#msg_account').html("");
+                    if ($('#account').val().length >= 1) {
+                        $.ajax({
+                            method: 'GET',
+                            url: '/admin/member/checkAccount',
+                            data: {
+                                account: $('#account').val()
+                            },
+                            success: function (response) {
+
+                                $('#msg_account').html(response);
+
+                            }
+                        });
+                    };
+                });
+            });
+        });
+    </script>
+
+}

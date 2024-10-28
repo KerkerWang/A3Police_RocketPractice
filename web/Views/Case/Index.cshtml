@@ -1,0 +1,882 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="/build/images/favicon.png?v=AybFTZHbqYgFVW98rWs9eFczD7Y5a_rAu3gK2dxSHF0">
+
+    <title>&#x81FA;&#x5357;&#x5E02;&#x653F;&#x5E9C;&#x8B66;&#x5BDF;&#x5C40;A3&#x4EA4;&#x901A;&#x4E8B;&#x6545;&#x6848;&#x4EF6;&#x7533;&#x8ACB;&#x7CFB;&#x7D71;</title>
+    <!-- Bootstrap core CSS -->
+    <link href="/lib/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/lib/bootstrap/5.1.3/js/bootstrap.min.js" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="/lib/jquery.gritter/css/jquery.gritter.css" />
+    <link rel="stylesheet" href="/build/fonts/fontawesome-free-6.1.1-web/css/all.min.css">
+
+    <link rel="stylesheet" type="text/css" href="/lib/jquery.nanoscroller/nanoscroller.css" />
+    <link rel="stylesheet" type="text/css" href="/lib/bootstrap.switch/bootstrap-switch.css" />
+    <link rel="stylesheet" type="text/css" href="/lib/bootstrap.datetimepicker/css/bootstrap-datetimepicker.min.css" />
+    <link rel="stylesheet" type="text/css" href="/lib/jquery.select2/select2.css" />
+    <link rel="stylesheet" type="text/css" href="/lib/bootstrap.slider/css/slider.css" />
+    <link rel="stylesheet" type="text/css" href="/lib/jquery.datatables/bootstrap-adapter/css/datatables.css">
+    <!-- DateRange -->
+    <link rel="stylesheet" type="text/css" href="/lib/bootstrap.daterangepicker/daterangepicker-bs3.css" />
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" href="/build/css/style_meng.min.css?v=6mwBACUshZi83YRcE-FG1jeELHwFk18RljKEO-hKqMc">
+    <link rel="stylesheet" href="/build/css/StyleFrontStage.min.css?v=PV4TrKGYehQzynt1b9Q3WxjhN1HQulqUrlc0hj0iWs8">
+    <link rel="stylesheet" href="/build/css/pygments.css">
+    <link rel="stylesheet" type="text/css" href="/lib/jquery.nanoscroller/nanoscroller.css" />
+    <link href="/lib/jquery.icheck/skins/square/blue.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/lib/bootstrap.multiselect/css/bootstrap-multiselect.css" />
+    <link rel="stylesheet" type="text/css" href="/lib/jquery.multiselect/css/multi-select.css" />
+
+    <link rel="stylesheet" type="text/css" href="/lib/jquery-ui/jquery-ui.min.css" />
+
+
+
+
+
+
+</head>
+<!-- Global IE fix to avoid layout crash when single word size wider than column width -->
+<!--[if IE]><style type="text/css"> body {word-wrap: break-word;}</style><![endif]-->
+<body id="bodyPage" style="overflow-y: auto; opacity: 1; margin-left: 0px;">
+    <!-- 訊息顯示視窗 -->
+    <div class="modal fade need-custom-backdrop" data-bs-backdrop="static" style="z-index: 2100" id="modal-info">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-light">
+                    <h3 class="modal-title" id="InfoModalTitle"></h3>
+                    <button type="button" class="btn-close btn-close-white" aria-hidden="true" onclick="$('#modal-info').modal('hide');"></button>
+                </div>
+                <div class="modal-body form">
+                    <div class="row-small-gutters">
+                        <h3 id="InfoModalMessage"></h3>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-flat" onclick="$('#modal-info').modal('hide');">關閉</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 訊息顯示視窗 -->
+    <!-- 顯示上傳進度視窗 -->
+    <div class="modal fade need-custom-backdrop" style="z-index: 2000" id="modal-uploading">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-light">
+                    <h3>上傳中</h3>
+                </div>
+                <div class="modal-body form">
+                    <div class="row-small-gutters">
+                        <div class="progress progress-striped active" style="margin-top: 20px;">
+                            <div id="UploadProgressBar" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                                <span class="sr-only"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-flat" data-bs-dismiss="modal" onclick="$('#modal-uploading').modal('hide'); CancelUpload();">取消上傳</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 顯示上傳進度視窗 -->
+    <!-- 錯誤顯示視窗 -->
+    <div class="modal fade need-custom-backdrop" data-bs-backdrop="static" style="z-index: 3000" id="modal-error">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-light">
+                    <h3 id="ErrorModalTitle"></h3>
+                    <button type="button" class="btn-close btn-close-white" aria-hidden="true" onclick="$('#modal-error').modal('hide');"></button>
+                </div>
+                <div class="modal-body form">
+                    <div class="row-small-gutters">
+                        <h3 id="ErrorModalMessage"></h3>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-flat" onclick="$('#modal-error').modal('hide');">關閉</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 錯誤顯示視窗 -->
+
+
+
+    <div id="cl-wrapper">
+        <!-- Main Page Container -->
+        <!-- A. HEADER  -->
+        <div class="header header_md_show fixed-top">
+            <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center pt-3 pb-1">
+                <img src="/build/images/logo.png">
+                <div>
+                    <a href="index">
+                        <img src="/build/images/a3word.svg" style="height:30px">
+                        <svg version="1.1" id="Layer" width="60" height="60" style="margin-bottom:10px">
+                            <path fill="#f5bb4b" d="M28,46c4.97,0,9.48-2.02,12.74-5.28C43.98,37.46,46,32.97,46,28c0-9.94-8.06-18-18-18s-18,8.06-18,18  S18.06,46,28,46z M22,23.9l5.97-4.9L34,23.92V35H22V23.9z" />
+                            <path fill="#2249a6" d="M28,48c4.671,0,9.099-1.592,12.669-4.521l11.916,11.934l2.83-2.826l-11.92-11.938  C46.413,37.077,48,32.655,48,28c0-11.028-8.972-20-20-20S8,16.972,8,28S16.972,48,28,48z M28,12c8.822,0,16,7.178,16,16  c0,4.258-1.661,8.275-4.674,11.306C36.299,42.333,32.276,44,28,44c-8.822,0-16-7.178-16-16S19.178,12,28,12z" />
+                            <path fill="#2249a6" d="M20,28.126V37h16v-8.867l1.735,1.416l2.529-3.099L27.966,16.416L15.731,26.454l2.537,3.093L20,28.126z   M27.974,21.584L32,24.87V33h-8v-8.156L27.974,21.584z" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="header header_md_none fixed-top flex-column">
+            <div class="container-fluid d-flex flex-column align-items-center pt-3 pb-1">
+                <img src="/build/images/logo.png">
+            </div>
+            <a href="index">
+                <div class="titleBig col-12 text-center ">
+                    <img src="/build/images/a3word_white.svg" style="max-height:80%;max-width:90%">
+                </div>
+            </a>
+        </div>
+        <!-- B. MAIN -->
+        <!-- BODY -->
+        <div class="ApplicationForm">
+            <div class="container-fluid py-5 p-md-5">
+                <div class="container d-flex justify-content-center flex-wrap">
+                    <div class="functionDiv newCase shadow col-12 d-flex align-items-center align-items-lg-start justify-content-lg-between flex-column flex-lg-row flex-wrap">
+                        <div class="titleDiv col-12 d-flex justify-content-center p-2">
+                            <labe><b>- 申請新案件 -</b></labe>
+                        </div>
+                        <div class="col-12 d-flex justify-content-center flex-wrap fs-6 py-3 lh-lg" style="background: #efefef;text-align: justify;">
+                            <div class="d-flex flex-column col-10 col-md-7 col-lg-9 m-3">
+                                <label><b>【 本申請系統使用說明 】</b></label>
+                                <span>一、申請案件只限本局受理之A3類(無人傷亡，僅有財損)道路交通事故案件，不含國道1、3、8號途經臺南市路段(管轄單位:國道公路警察局)、南部科學園區內道路(管轄單位:保二總隊)、安平港自由貿易港區及非屬道路範圍車輛事故案件。</span>
+                                <span>二、使用本申請系統須填寫有效電子郵件進行驗證，以利警察機關通知領件，如無電子郵件帳號者，請至鄰近警察機關或原處理機關臨櫃申請事故資料。目前本系統只開放由原處理分局交通分隊臨櫃領件，倘若申請人取件地點非原處理分局交通分隊，亦請臨櫃申請。</span>
+                                <span>三、本局開立之道路交通事故當事人登記聯單當事人名稱為路面、物品、動物、交通管制設施等種類，請至鄰近警察機關或原處理機關臨櫃申請事故資料。</span>
+                            </div>
+                            <div class="d-flex flex-column col-10 col-md-7 col-lg-9 m-3">
+                                <label><b>【 臨櫃領件需知事項 】</b></label>
+                                <span>一、申請資料於領件機關備妥時，系統將以電子郵件通知申請人領件。</span>
+                                <span>二、申請人同當事人時，領件應攜帶身分證明文件，並於警察機關列印之道路交通事故資料申請書(以下簡稱申請書)申請人欄位簽名或蓋章。</span>
+                                <span>三、申請人非當事人時，領件時請注意下列事項：</span>
+                                <span style="padding-left: 2rem;">(1) 自行備妥委託書或於本系統網頁下載列印 (請印製成A4紙大小，俾便本局作業)，由當事人填寫與簽章，申請人於領件當日攜帶申請人、當事人身分證件(影本亦可)以供查核身分，並將當事人簽章之正本委託書交予領件機關，並於警察機關列印之申請書申請人欄位簽名或蓋章。</span>
+                                <span style="padding-left: 2rem;">(2) 保險業者使用本系統申請事故資料領件時，應將當事人簽章之正本委託書、當事人身分證件影本交予領件機關，並檢具保險公司證(函)件及個人身分證明文件等以供查驗(依道路交通事故處理規範第60點辦理)。</span>
+                            </div>
+                        </div>
+                        <div class="col-12 d-flex flex-wrap justify-content-center py-2" style="background: #a4b7b9;">
+                            <button id="downloadApplyDoc" class="btn btn-download me-3 px-3 my-2 my-sm-0">下載 道路交通事故資料申請書</button>
+                            <button id="downloadCommissionDoc" class="btn btn-download px-3 my-2 my-sm-0">下載 委託書</button>
+                        </div>
+                        <form id="form-insert" class="col-12 d-flex flex-wrap justify-content-center mt-4">
+                            <div class="contentDiv col-10 col-md-7 col-lg-3 m-3 ms-lg-5 position-relative">
+                                <div class="title d-flex justify-content-center border-bottom p-2">
+                                    <labe><b>申請人資料</b></labe>
+                                </div>
+                                <div class="contentDiv d-flex flex-column p-3">
+                                    <div class="d-flex flex-column mb-3">
+                                        <label>姓名：</label>
+                                        <input class="forIsSamePersonListener" type="text" data-val="true" data-val-maxlength="&#x59D3;&#x540D;&#x4E0D;&#x53EF;&#x8D85;&#x904E;100&#x500B;&#x5B57;" data-val-maxlength-max="100" data-val-required="&#x8ACB;&#x8F38;&#x5165;&#x59D3;&#x540D;" id="AppInput_ApplicantName" maxlength="100" name="AppInput.ApplicantName" value="">
+                                        <span class="text-danger field-validation-valid" data-valmsg-for="AppInput.ApplicantName" data-valmsg-replace="true"></span>
+                                    </div>
+                                    <div class="d-flex flex-column mb-3">
+                                        <label>生日：</label>
+                                        <input class="forIsSamePersonListener" type="date" data-val="true" data-val-required="&#x8ACB;&#x8F38;&#x5165;&#x51FA;&#x751F;&#x5E74;&#x6708;&#x65E5;" id="AppInput_ApplicantBirth" name="AppInput.ApplicantBirth" value="">
+                                        <span class="text-danger field-validation-valid" data-valmsg-for="AppInput.ApplicantBirth" data-valmsg-replace="true"></span>
+                                    </div>
+                                    <div class="d-flex flex-column mb-3">
+                                        <label>身分證字號 / 護照號碼：</label>
+                                        <div class="radioDiv d-flex justify-content-between align-items-center flex-wrap">
+                                            <div>
+                                                <input class="forIsSamePersonListener" type="radio" value="true" data-val="true" data-val-required="&#x8ACB;&#x9078;&#x64C7;&#x662F;&#x5426;&#x70BA;&#x672C;&#x570B;&#x4EBA;" id="AppInput_ApplicantIsCitizen" name="AppInput.ApplicantIsCitizen">
+                                                <span class="me-3">本國人</span>
+                                            </div>
+                                            <div>
+                                                <input class="forIsSamePersonListener" type="radio" value="false" id="AppInput_ApplicantIsCitizen" name="AppInput.ApplicantIsCitizen">
+                                                <span>外國人</span>
+                                            </div>
+                                        </div>
+                                        <input class="forIsSamePersonListener" type="text" data-val="true" data-val-maxlength="&#x8EAB;&#x5206;&#x8B49;&#x865F;/&#x8B77;&#x7167;&#x865F;&#x78BC;&#x4E0D;&#x53EF;&#x8D85;&#x904E;20&#x500B;&#x5B57;" data-val-maxlength-max="20" data-val-required="&#x8ACB;&#x8F38;&#x5165;&#x8EAB;&#x5206;&#x8B49;&#x865F;/&#x8B77;&#x7167;&#x865F;&#x78BC;" id="AppInput_ApplicantIdentityNumber" maxlength="20" name="AppInput.ApplicantIdentityNumber" value="">
+                                        <span class="text-danger field-validation-valid" id="ApplicantIdentityNumber" data-valmsg-for="AppInput.ApplicantIsCitizen" data-valmsg-replace="true"></span>
+                                        <span class="text-danger field-validation-valid" data-valmsg-for="AppInput.ApplicantIdentityNumber" data-valmsg-replace="true"></span>
+                                    </div>
+                                    <div class="d-flex flex-column mb-3">
+                                        <label>連絡電話：</label>
+                                        <input class="forIsSamePersonListener" type="text" data-val="true" data-val-maxlength="&#x9023;&#x7D61;&#x96FB;&#x8A71;&#x4E0D;&#x53EF;&#x8D85;&#x904E;20&#x500B;&#x5B57;" data-val-maxlength-max="20" data-val-required="&#x8ACB;&#x8F38;&#x5165;&#x9023;&#x7D61;&#x96FB;&#x8A71;" id="AppInput_ApplicantTelephone" maxlength="20" name="AppInput.ApplicantTelephone" value="">
+                                        <span class="text-danger field-validation-valid" data-valmsg-for="AppInput.ApplicantTelephone" data-valmsg-replace="true"></span>
+                                    </div>
+                                    <div class="d-flex flex-column mb-3">
+                                        <label>地址：</label>
+                                        <input class="forIsSamePersonListener" type="text" data-val="true" data-val-maxlength="&#x5730;&#x5740;&#x4E0D;&#x53EF;&#x8D85;&#x904E;100&#x500B;&#x5B57;" data-val-maxlength-max="100" data-val-required="&#x8ACB;&#x8F38;&#x5165;&#x5730;&#x5740;" id="AppInput_ApplicantAddress" maxlength="100" name="AppInput.ApplicantAddress" value="">
+                                        <span class="text-danger field-validation-valid" data-valmsg-for="AppInput.ApplicantAddress" data-valmsg-replace="true"></span>
+                                    </div>
+                                    <div class="d-flex flex-column mb-3">
+                                        <label>電子郵件：</label>
+                                        <input type="email" data-val="true" data-val-email="Email&#x683C;&#x5F0F;&#x932F;&#x8AA4;" data-val-maxlength="Email&#x4E0D;&#x53EF;&#x8D85;&#x904E;100&#x500B;&#x5B57;" data-val-maxlength-max="100" data-val-required="&#x8ACB;&#x8F38;&#x5165;Email" id="AppInput_ApplicantEmail" maxlength="100" name="AppInput.ApplicantEmail" value="">
+                                        <span class="noteFont">送出申請後，會發送驗證連結，請於24小時內點擊確認，才算申請成功</span>
+                                        <span class="text-danger field-validation-valid" data-valmsg-for="AppInput.ApplicantEmail" data-valmsg-replace="true"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="contentDiv col-10 col-md-7 col-lg-3 m-3 position-relative">
+                                <div class="title d-flex flex-column align-items-center border-bottom p-2">
+                                    <labe><b>當事人資料</b></labe>
+                                </div>
+                                <div class="contentDiv d-flex flex-column p-3">
+                                    <div class="d-flex flex-column mb-3">
+                                        <label>與當事人關係：</label>
+                                        <select data-val="true" data-val-required="&#x8ACB;&#x9078;&#x64C7;&#x7533;&#x8ACB;&#x4EBA;&#x8207;&#x7576;&#x4E8B;&#x4EBA;&#x95DC;&#x4FC2;" id="AppInput_StakeType" name="AppInput.StakeType">
+                                            <option value="">請選擇...</option>
+                                            <option value="A">本人</option>
+                                            <option value="B">受當事人委託</option>
+                                            <option value="C">與當事人有利害關係</option>
+                                        </select>
+                                        <input placeholder="請填寫與當事人的利害關係..." class="d-none" type="text" data-val="true" data-val-maxlength="&#x8207;&#x7576;&#x4E8B;&#x4EBA;&#x5229;&#x5BB3;&#x95DC;&#x4FC2;&#x4E0D;&#x53EF;&#x8D85;&#x904E;100&#x500B;&#x5B57;" data-val-maxlength-max="100" id="AppInput_Stake" maxlength="100" name="AppInput.Stake" value="">
+                                        <span class="text-danger field-validation-valid" data-valmsg-for="AppInput.StakeType" data-valmsg-replace="true"></span>
+                                        <span class="text-danger field-validation-valid" data-valmsg-for="AppInput.Stake" data-valmsg-replace="true"></span>
+                                    </div>
+                                    <div class="d-flex flex-column mb-3">
+                                        <label>姓名：</label>
+                                        <input type="text" data-val="true" data-val-maxlength="&#x59D3;&#x540D;&#x4E0D;&#x53EF;&#x8D85;&#x904E;100&#x500B;&#x5B57;" data-val-maxlength-max="100" data-val-required="&#x8ACB;&#x8F38;&#x5165;&#x59D3;&#x540D;" id="AppInput_ClientName" maxlength="100" name="AppInput.ClientName" value="">
+                                        <span class="text-danger field-validation-valid" data-valmsg-for="AppInput.ClientName" data-valmsg-replace="true"></span>
+                                    </div>
+                                    <div class="d-flex flex-column mb-3">
+                                        <label>生日：</label>
+                                        <input type="date" data-val="true" data-val-required="&#x8ACB;&#x8F38;&#x5165;&#x51FA;&#x751F;&#x5E74;&#x6708;&#x65E5;" id="AppInput_ClientBirth" name="AppInput.ClientBirth" value="">
+                                        <span class="text-danger field-validation-valid" data-valmsg-for="AppInput.ClientBirth" data-valmsg-replace="true"></span>
+                                    </div>
+                                    <div class="d-flex flex-column mb-3">
+                                        <label>身分證字號 / 護照號碼：</label>
+                                        <div class="radioDiv d-flex justify-content-between align-items-center flex-wrap">
+                                            <div>
+                                                <input type="radio" value="true" data-val="true" data-val-required="&#x8ACB;&#x9078;&#x64C7;&#x662F;&#x5426;&#x70BA;&#x672C;&#x570B;&#x4EBA;" id="AppInput_ClientIsCitizen" name="AppInput.ClientIsCitizen">
+                                                <span class="me-3">本國人</span>
+                                            </div>
+                                            <div>
+                                                <input type="radio" value="false" id="AppInput_ClientIsCitizen" name="AppInput.ClientIsCitizen">
+                                                <span>外國人</span>
+                                            </div>
+                                        </div>
+                                        <input type="text" data-val="true" data-val-maxlength="&#x8EAB;&#x5206;&#x8B49;&#x865F;/&#x8B77;&#x7167;&#x865F;&#x78BC;&#x4E0D;&#x53EF;&#x8D85;&#x904E;20&#x500B;&#x5B57;" data-val-maxlength-max="20" data-val-required="&#x8ACB;&#x8F38;&#x5165;&#x8EAB;&#x5206;&#x8B49;&#x865F;/&#x8B77;&#x7167;&#x865F;&#x78BC;" id="AppInput_ClientIdentityNumber" maxlength="20" name="AppInput.ClientIdentityNumber" value="">
+                                        <span class="text-danger field-validation-valid" id="ClientIdentityNumber" data-valmsg-for="AppInput.ClientIsCitizen" data-valmsg-replace="true"></span>
+                                        <span class="text-danger field-validation-valid" data-valmsg-for="AppInput.ClientIdentityNumber" data-valmsg-replace="true"></span>
+                                    </div>
+                                    <div class="d-flex flex-column mb-3">
+                                        <label>連絡電話：</label>
+                                        <input type="text" data-val="true" data-val-maxlength="&#x9023;&#x7D61;&#x96FB;&#x8A71;&#x4E0D;&#x53EF;&#x8D85;&#x904E;20&#x500B;&#x5B57;" data-val-maxlength-max="20" data-val-required="&#x8ACB;&#x8F38;&#x5165;&#x9023;&#x7D61;&#x96FB;&#x8A71;" id="AppInput_ClientTelephone" maxlength="20" name="AppInput.ClientTelephone" value="">
+                                        <span class="text-danger field-validation-valid" data-valmsg-for="AppInput.ClientTelephone" data-valmsg-replace="true"></span>
+                                    </div>
+                                    <div class="d-flex flex-column mb-3">
+                                        <label>地址：</label>
+                                        <input type="text" data-val="true" data-val-maxlength="&#x5730;&#x5740;&#x4E0D;&#x53EF;&#x8D85;&#x904E;100&#x500B;&#x5B57;" data-val-maxlength-max="100" data-val-required="&#x8ACB;&#x8F38;&#x5165;&#x5730;&#x5740;" id="AppInput_ClientAddress" maxlength="100" name="AppInput.ClientAddress" value="">
+                                        <span class="text-danger field-validation-valid" data-valmsg-for="AppInput.ClientAddress" data-valmsg-replace="true"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="contentDiv col-10 col-md-7 col-lg-3 m-3 me-lg-5">
+                                <div class="title d-flex justify-content-center border-bottom p-2">
+                                    <labe><b>案件資料</b></labe>
+                                </div>
+                                <div class="contentDiv d-flex flex-column p-3">
+                                    <div class="d-flex flex-column mb-3">
+                                        <label>發生時間：</label>
+                                        <input type="datetime-local" data-val="true" data-val-required="&#x8ACB;&#x8F38;&#x5165;&#x4E8B;&#x6545;&#x767C;&#x751F;&#x6642;&#x9593;" id="AppInput_AccidentDate" name="AppInput.AccidentDate" value="">
+                                        <span class="text-danger field-validation-valid" data-valmsg-for="AppInput.AccidentDate" data-valmsg-replace="true"></span>
+                                    </div>
+                                    <div class="d-flex flex-column mb-3">
+                                        <label>發生地點：</label>
+                                        <input type="text" data-val="true" data-val-maxlength="&#x4E8B;&#x6545;&#x767C;&#x751F;&#x5730;&#x9EDE;&#x4E0D;&#x53EF;&#x8D85;&#x904E;100&#x500B;&#x5B57;" data-val-maxlength-max="100" data-val-required="&#x8ACB;&#x8F38;&#x5165;&#x4E8B;&#x6545;&#x767C;&#x751F;&#x5730;&#x9EDE;" id="AppInput_AccidentAddress" maxlength="100" name="AppInput.AccidentAddress" value="">
+                                        <span class="noteFont">請依本局開立之道路交通事故當事人登記聯單地點填寫</span>
+                                        <span class="text-danger field-validation-valid" data-valmsg-for="AppInput.AccidentAddress" data-valmsg-replace="true"></span>
+                                    </div>
+                                    <div class="d-flex flex-column mb-3">
+                                        <label>處理單位 / 交通分隊或派出所：</label>
+                                        <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                            <select class="col-12" data-val="true" data-val-required="&#x8ACB;&#x9078;&#x64C7;&#x5206;&#x5C40;" id="AppInput_TbPrecinctId" name="AppInput.TbPrecinctId">
+                                                <option selected disabled value="">處理單位...</option>
+                                            </select>
+                                            <select class="col-12" data-val="true" data-val-required="&#x8ACB;&#x9078;&#x64C7;&#x6D3E;&#x51FA;&#x6240;&#x6216;&#x4EA4;&#x901A;&#x5206;&#x968A;" id="AppInput_TbPrecinctChildId" name="AppInput.TbPrecinctChildId">
+                                                <option selected disabled value="">交通分隊或派出所...</option>
+                                                <option disabled>請先選擇處理單位...</option>
+                                            </select>
+                                            <span class="text-danger col-12 field-validation-valid" data-valmsg-for="AppInput.TbPrecinctId" data-valmsg-replace="true"></span>
+                                            <span class="text-danger field-validation-valid" data-valmsg-for="AppInput.TbPrecinctChildId" data-valmsg-replace="true"></span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex flex-column mb-3">
+                                        <label>道路交通事故當事人登記聯單填表人：</label>
+                                        <input type="text" data-val="true" data-val-maxlength="&#x806F;&#x55AE;&#x586B;&#x8868;&#x4EBA;&#x4E0D;&#x53EF;&#x8D85;&#x904E;20&#x500B;&#x5B57;" data-val-maxlength-max="20" data-val-required="&#x8ACB;&#x8F38;&#x5165;&#x806F;&#x55AE;&#x586B;&#x8868;&#x4EBA;" id="AppInput_FormWriter" maxlength="20" name="AppInput.FormWriter" value="">
+                                        <span class="text-danger field-validation-valid" data-valmsg-for="AppInput.FormWriter" data-valmsg-replace="true"></span>
+                                        <span id="AppInput_FormWriter_Ch" class="text-danger"></span>
+                                    </div>
+                                    <div class="title d-flex justify-content-center border-bottom p-2 mt-3">
+                                        <label><b>申請項目</b></label>
+                                    </div>
+                                    <span id="checkItemGroup_error" class="text-danger text-center col-12"></span>
+                                    <div class="contentDiv d-flex flex-column p-3">
+                                        <div id="checkItemGroup" class="d-flex flex-column mb-3">
+                                            <div class="col-12 d-flex align-items-start my-2">
+                                                <input type="checkbox" class="mt-6px" data-val="true" data-val-required="The IsApplyMap field is required." id="AppInput_IsApplyMap" name="AppInput.IsApplyMap" value="true">
+                                                <div class="d-flex flex-column ms-2">
+                                                    <span>現場圖一份</span>
+                                                    <span class="noteFont">事故發生<span id="dayMap"></span>日後可申請</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 d-flex align-items-start my-2">
+                                                <input type="checkbox" class="mt-6px" data-val="true" data-val-required="The IsApplyPicture field is required." id="AppInput_IsApplyPicture" name="AppInput.IsApplyPicture" value="true">
+                                                <div class="d-flex flex-column ms-2">
+                                                    <span>現場圖照片一份</span>
+                                                    <span class="noteFont">事故發生<span id="dayPicture"></span>日後可申請</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 d-flex align-items-start my-2">
+                                                <input type="checkbox" class="mt-6px" data-val="true" data-val-required="The IsApplyForm field is required." id="AppInput_IsApplyForm" name="AppInput.IsApplyForm" value="true">
+                                                <div class="d-flex flex-column ms-2">
+                                                    <span>交通事故初步分析研判表一份</span>
+                                                    <span class="noteFont">事故發生<span id="dayForm"></span>日後可申請</span>
+                                                </div>
+                                            </div>
+                                            <span class="text-danger field-validation-valid" data-valmsg-for="AppInput.IsApplyMap" data-valmsg-replace="true"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="contentDiv col-12 p-3 d-flex justify-content-center" style="background: #e9ecef;">
+                                <div class="d-flex flex-column col-10 col-md-7 col-lg-3 p-3">
+                                    <label>驗證碼：</label>
+                                    <div class="visibility-hidden d-none">
+                                        <input name="id" type="text">
+                                    </div>
+                                    <input name="code" type="text">
+                                    <div class="mt-1">
+                                        <img name="ValidateCode" class="ValidateCode" src="">
+                                        <a onclick="GetValidateCode();"><i class="fa-solid fa-rotate-right"></i></a>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="buttonDiv col-12 d-flex justify-content-center p-2" onclick="FormSubmit()">
+                                送 出
+                            </div>
+                            <input name="AppInput.IsApplyMap" type="hidden" value="false"><input name="AppInput.IsApplyPicture" type="hidden" value="false"><input name="AppInput.IsApplyForm" type="hidden" value="false">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- C. Footer -->
+        <div class="noticeDiv">
+            <div class="container d-flex flex-column align-items-start align-items-sm-center pt-3 pb-5 px-5 fw-semibold">
+                <label class="fs-5" style="color:#ffcd6d;letter-spacing: 0.2rem;"><b>臺南市政府警察局</b></label>
+                <span class="noteFont text-white">地址：730207 臺南市新營區中正路3號</span>
+                <span class="noteFont text-white">總機：06-6322210、06-6322140 ( 警局總機只能撥入不能撥出 )</span>
+                <span class="noteFont text-white">臺南市政府警察局 版權所有 © 2022</span>
+                <span class="noteFont text-white">最佳瀏覽解析度為 1920 * 1080，建議使用瀏覽器：Chrome、Firefox、Edge</span>
+                <span class="noteFont text-white">若對網站有任何疑問，請於上班日(除國定例假日外，週一至週五08:00-12:00、13:30-17:30)</span>
+                <span class="noteFont text-white">來電06-2626013洽本局交通警察大隊事故處理組。</span>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="/lib/jquery.js"></script>
+    <script type="text/javascript" src="/lib/jquery.nanoscroller/jquery.nanoscroller.js"></script>
+    <script type="text/javascript" src="/lib/jquery.sparkline/jquery.sparkline.min.js"></script>
+    <script type="text/javascript" src="/lib/jquery-ui/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/lib/jquery.nestable/jquery.nestable.js"></script>
+    <script type="text/javascript" src="/lib/bootstrap.switch/bootstrap-switch.min.js"></script>
+    <script type="text/javascript" src="/lib/bootstrap.datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript" src="/lib/jquery.select2/select2.min.js"></script>
+    <script type="text/javascript" src="/lib/bootstrap.slider/js/bootstrap-slider.js"></script>
+    <script type="text/javascript" src="/lib/jquery.gritter/js/jquery.gritter.js"></script>
+    <script src="/lib/bootstrap.slider/js/bootstrap-slider.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/lib/bootstrap.switch/bootstrap-switch.js"></script>
+    <script type="text/javascript" src="/lib/jquery.icheck/icheck.min.js"></script>
+    <script type="text/javascript" src="/lib/bootstrap.daterangepicker/moment.min.js"></script>
+    <script type="text/javascript" src="/lib/bootstrap.daterangepicker/daterangepicker.js"></script>
+    <script type="text/javascript" src="/lib/signature_pad.umd.js"></script>
+    <script type="text/javascript" src="/lib/behaviour/general.js"></script>
+    <script type="text/javascript" src="/lib/bootstrap.multiselect/js/bootstrap-multiselect.js"></script>
+    <script type="text/javascript" src="/lib/jquery.multiselect/js/jquery.multi-select.js"></script>
+    <script type="text/javascript" src="/lib/jquery.quicksearch/jquery.quicksearch.js"></script>
+    <script type="text/javascript" src="/lib/bootstrap/5.1.3/js/bootstrap.min.js"></script>
+
+
+
+    <!-- Datatables -->
+    <script src="/js/datatables.net/jquery.dataTables.min.js?v=6hwR69XgaDwyZ_4rzUPv5ivnm-36jfKQad84XFrAdng"></script>
+    <script src="/js/datatables.net-bs/dataTables.bootstrap.min.js?v=yQllR101mg7IS6aGyVjgCHncDCxfGI7TWNO0bnDPhpA"></script>
+    <script src="/js/datatables.net-responsive/dataTables.responsive.min.js?v=kpk4z0xrjZhh74VaWYKavvMysoUfBs4V-QlpMGtD3zI"></script>
+    <script src="/js/datatables.net-responsive-bs/responsive.bootstrap.min.js?v=8m_2TyP9JfjrkY9NGG0xf5rLf9HMFGRsVuvLKyrQG-g"></script>
+    <script src="/js/datatables.net/ColReorderWithResize.min.js?v=6pydQaI8Nk_zSo54DnzS8IsFF0_UKTzJ9_OKr4gdLOI"></script>
+    <!-- 驗證API回傳值功能 -->
+    @* <script src="/build/js/VerifyApi.min.js?v=5dLGzBVHFpWhMixEg5e8tQa1UDqycvNDX_hrdzkRo_k"></script> *@
+    <!-- Validate -->
+    <script src="/lib/jquery-validation/dist/jquery.validate.min.js?v=eItLFOyfQ4d_OGzEnGchi2ZMVF8EhGgzS0k7fSOPifQ"></script>
+    <script src="/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js?v=9GycpJnliUjJDVDqP0UEu_bsm9U-3dnQUH8-3W10vkY"></script>
+
+
+    <script>
+        var rootDir = "/";
+
+        $(function () {
+
+            //頁籤位置
+            let PageLabel = $('.cl-vnavigation').find('a');
+
+            for (let i = 0; i < PageLabel.length; i++) {
+                if (location.href == $(PageLabel[i]).prop('href')) {
+                    $(PageLabel[i]).closest('li').addClass("active");
+                    break;
+                }
+            }
+
+            //初始化general.js的資料
+            App.init();
+
+            $(".cl-toggle").click(function (e) {
+                var ul = $(".cl-vnavigation");
+                ul.slideToggle(300, 'swing', function () {
+                });
+                e.preventDefault();
+            });
+
+        });
+
+    </script>
+
+    <script type="text/javascript">
+        //關閉DataTable顯示錯誤提示視窗的功能
+        $.fn.dataTable.ext.errMode = 'none';
+
+        //初始化VerifyApi
+        VerifyApi_Initialization(
+            '伺服器過於忙碌，暫時無法取得資料',
+            '發生錯誤，請嘗試重新整理',
+            '有其他資料參考，無法刪除',
+            '新增失敗',
+            '修改失敗',
+            '刪除失敗',
+            '查詢失敗',
+            '下載失敗',
+            '上傳失敗',
+            '警告',
+            '發現高風險文字，例如：「<!」、「&#」...等，請檢查輸入的文字',
+            rootDir + 'AccessDenied',
+            rootDir + 'Management/Login',
+            rootDir + 'Error',
+            function (Title, Message) {
+                if (Title == '' || Title == ' ')
+                    $('#ErrorModalTitle').html('&ensp;');
+                else
+                    $('#ErrorModalTitle').text(Title);
+
+                $('#ErrorModalMessage').text(Message);
+                $('#modal-error').modal('show');
+            }
+        );
+
+        //need-custom-backdrop為打開複數modal時，需要不同高度的背景層
+        //在跳出視窗後，才可以調整背景Z軸高度
+        $(".need-custom-backdrop").on('shown.bs.modal', function (event) {
+            let z = $(this).css('z-index');
+            $('.modal-backdrop').last().css('z-index', z - 50);
+        });
+
+        //寫入接洽人員與電話
+        $('#ContactPersonName').text("葉先生");
+        $('#Telephone').text("06-2626013");
+
+    </script>
+
+
+    <script type="text/javascript">
+        var PrecinctChildInfoLst = [{ "precinctId": "5ccfd8e8-aa3e-4e0e-87c5-76fe6647b2ca", "precinctName": "新營分局", "precinctChildId": "ddb11437-1942-4d08-81ed-bb6af0cdc36b", "precinctChildName": "中山路派出所" }, { "precinctId": "5ccfd8e8-aa3e-4e0e-87c5-76fe6647b2ca", "precinctName": "新營分局", "precinctChildId": "3aca8736-2c5e-4401-babf-9b401d89d30e", "precinctChildName": "太宮派出所" }, { "precinctId": "5ccfd8e8-aa3e-4e0e-87c5-76fe6647b2ca", "precinctName": "新營分局", "precinctChildId": "8b9b1b92-2fa9-4ef3-8437-971674788339", "precinctChildName": "民治派出所" }, { "precinctId": "5ccfd8e8-aa3e-4e0e-87c5-76fe6647b2ca", "precinctName": "新營分局", "precinctChildId": "0f8080c7-4bd3-4ed3-bbb0-4e287d12a10b", "precinctChildName": "交通分隊" }, { "precinctId": "5ccfd8e8-aa3e-4e0e-87c5-76fe6647b2ca", "precinctName": "新營分局", "precinctChildId": "739282db-af43-40d6-acdb-31b531c18b84", "precinctChildName": "竹埔派出所" }, { "precinctId": "5ccfd8e8-aa3e-4e0e-87c5-76fe6647b2ca", "precinctName": "新營分局", "precinctChildId": "fe6fed31-ce8d-4f9f-b09e-ee41732f0e0c", "precinctChildName": "果毅派出所" }, { "precinctId": "5ccfd8e8-aa3e-4e0e-87c5-76fe6647b2ca", "precinctName": "新營分局", "precinctChildId": "eec900c6-dc8c-4660-a774-b4d9bfec3828", "precinctChildName": "後鎮派出所" }, { "precinctId": "5ccfd8e8-aa3e-4e0e-87c5-76fe6647b2ca", "precinctName": "新營分局", "precinctChildId": "076feb76-fac1-4e2e-a7db-630d1e3c713f", "precinctChildName": "柳營分駐所" }, { "precinctId": "5ccfd8e8-aa3e-4e0e-87c5-76fe6647b2ca", "precinctName": "新營分局", "precinctChildId": "6b2d58f4-4e85-4535-973d-372eb4f8ad3e", "precinctChildName": "重溪派出所" }, { "precinctId": "5ccfd8e8-aa3e-4e0e-87c5-76fe6647b2ca", "precinctName": "新營分局", "precinctChildId": "f8d5e4f2-6619-4d87-b7d6-a02395af1c69", "precinctChildName": "華雅派出所" }, { "precinctId": "5ccfd8e8-aa3e-4e0e-87c5-76fe6647b2ca", "precinctName": "新營分局", "precinctChildId": "b6f4004b-53af-41b4-aed1-39366e1b7f24", "precinctChildName": "鹽水分駐所" }, { "precinctId": "3c7d38c3-5ef0-41ef-a7ac-a745f241558b", "precinctName": "白河分局", "precinctChildId": "e60834f8-4db5-4d5d-9710-cea67427cb6d", "precinctChildName": "內角派出所" }, { "precinctId": "3c7d38c3-5ef0-41ef-a7ac-a745f241558b", "precinctName": "白河分局", "precinctChildId": "22b4a6c2-f595-4c95-be02-2467b28207f0", "precinctChildName": "仙草派出所" }, { "precinctId": "3c7d38c3-5ef0-41ef-a7ac-a745f241558b", "precinctName": "白河分局", "precinctChildId": "de0892fc-c772-4175-adc0-1a1aa89f2f5a", "precinctChildName": "玉豐派出所" }, { "precinctId": "3c7d38c3-5ef0-41ef-a7ac-a745f241558b", "precinctName": "白河分局", "precinctChildId": "6cad6ae7-0a46-449e-ad92-9f41dcb0c903", "precinctChildName": "白河派出所" }, { "precinctId": "3c7d38c3-5ef0-41ef-a7ac-a745f241558b", "precinctName": "白河分局", "precinctChildId": "54aa4c2e-b207-4b6f-878b-29568394ee44", "precinctChildName": "交通分隊" }, { "precinctId": "3c7d38c3-5ef0-41ef-a7ac-a745f241558b", "precinctName": "白河分局", "precinctChildId": "240dcadb-9714-4b30-a7d9-7132bc437398", "precinctChildName": "安溪派出所" }, { "precinctId": "3c7d38c3-5ef0-41ef-a7ac-a745f241558b", "precinctName": "白河分局", "precinctChildId": "6ac4ba8b-c4b2-413b-8a65-f3a182eff032", "precinctChildName": "竹門派出所" }, { "precinctId": "3c7d38c3-5ef0-41ef-a7ac-a745f241558b", "precinctName": "白河分局", "precinctChildId": "afec52f9-7ea6-424c-8058-bd562d1c344e", "precinctChildName": "東山分駐所" }, { "precinctId": "3c7d38c3-5ef0-41ef-a7ac-a745f241558b", "precinctName": "白河分局", "precinctChildId": "715eba04-3412-42bd-abd4-9113ddc3dc7f", "precinctChildName": "東河派出所" }, { "precinctId": "3c7d38c3-5ef0-41ef-a7ac-a745f241558b", "precinctName": "白河分局", "precinctChildId": "5cd53e20-0c84-48fc-b3d6-c9c8b55f8799", "precinctChildName": "東原派出所" }, { "precinctId": "3c7d38c3-5ef0-41ef-a7ac-a745f241558b", "precinctName": "白河分局", "precinctChildId": "1cec5680-ea75-43e7-891d-06a3065d6f13", "precinctChildName": "長安派出所" }, { "precinctId": "3c7d38c3-5ef0-41ef-a7ac-a745f241558b", "precinctName": "白河分局", "precinctChildId": "1a9ef4ed-b5ae-48a7-8a72-7397e8c4accc", "precinctChildName": "後壁分駐所" }, { "precinctId": "3c7d38c3-5ef0-41ef-a7ac-a745f241558b", "precinctName": "白河分局", "precinctChildId": "3ecba512-6161-4934-98eb-befefd4cd47a", "precinctChildName": "菁寮派出所" }, { "precinctId": "3c7d38c3-5ef0-41ef-a7ac-a745f241558b", "precinctName": "白河分局", "precinctChildId": "ca36f2df-40c1-4b21-b65e-2c972e682211", "precinctChildName": "關嶺派出所" }, { "precinctId": "3e74f8b9-1e27-474c-96c2-a1f172807e36", "precinctName": "麻豆分局", "precinctChildId": "a8665309-15e9-4bce-9721-5cfe7e65ecc2", "precinctChildName": "下營分駐所" }, { "precinctId": "3e74f8b9-1e27-474c-96c2-a1f172807e36", "precinctName": "麻豆分局", "precinctChildId": "15cbf89a-7899-4f8b-bdd5-0fa610b974e9", "precinctChildName": "大丘派出所" }, { "precinctId": "3e74f8b9-1e27-474c-96c2-a1f172807e36", "precinctName": "麻豆分局", "precinctChildId": "868160a1-ef74-4614-baed-0a3879edac72", "precinctChildName": "六甲分駐所" }, { "precinctId": "3e74f8b9-1e27-474c-96c2-a1f172807e36", "precinctName": "麻豆分局", "precinctChildId": "8efdfe14-3828-4f9b-9ea0-b88b65d82eb5", "precinctChildName": "交通分隊" }, { "precinctId": "3e74f8b9-1e27-474c-96c2-a1f172807e36", "precinctName": "麻豆分局", "precinctChildId": "db2b6853-d0a1-42e1-8bac-76a535065782", "precinctChildName": "安業派出所" }, { "precinctId": "3e74f8b9-1e27-474c-96c2-a1f172807e36", "precinctName": "麻豆分局", "precinctChildId": "3cae0122-5629-4a2c-be9a-e2d1ed315d39", "precinctChildName": "官田分駐所" }, { "precinctId": "3e74f8b9-1e27-474c-96c2-a1f172807e36", "precinctName": "麻豆分局", "precinctChildId": "282428d1-98d6-4dd8-bac0-18528efae240", "precinctChildName": "官鎮派出所" }, { "precinctId": "3e74f8b9-1e27-474c-96c2-a1f172807e36", "precinctName": "麻豆分局", "precinctChildId": "46338911-fe9f-4381-a771-bd34de2449bd", "precinctChildName": "拔林派出所" }, { "precinctId": "3e74f8b9-1e27-474c-96c2-a1f172807e36", "precinctName": "麻豆分局", "precinctChildId": "7589cfe4-33fe-4b1b-9bc9-7981a7f9cb4a", "precinctChildName": "茅港派出所" }, { "precinctId": "3e74f8b9-1e27-474c-96c2-a1f172807e36", "precinctName": "麻豆分局", "precinctChildId": "c3ea52f1-575a-491a-8157-68a77c242ee4", "precinctChildName": "埤頭派出所" }, { "precinctId": "3e74f8b9-1e27-474c-96c2-a1f172807e36", "precinctName": "麻豆分局", "precinctChildId": "eabf005d-c437-452f-9c24-59b0729628fb", "precinctChildName": "麻豆派出所" }, { "precinctId": "3e74f8b9-1e27-474c-96c2-a1f172807e36", "precinctName": "麻豆分局", "precinctChildId": "93258675-1014-4fcd-b6c1-984cbc084407", "precinctChildName": "湖山派出所" }, { "precinctId": "3e74f8b9-1e27-474c-96c2-a1f172807e36", "precinctName": "麻豆分局", "precinctChildId": "33970347-c033-47dc-9523-c0a8f85d0676", "precinctChildName": "鳳林派出所" }, { "precinctId": "3e74f8b9-1e27-474c-96c2-a1f172807e36", "precinctName": "麻豆分局", "precinctChildId": "b86cad5e-8018-4780-86a7-408d3a19c224", "precinctChildName": "總爺派出所" }, { "precinctId": "d5831fd7-fc87-4467-80d2-416695d380ae", "precinctName": "善化分局", "precinctChildId": "854c40d1-dddf-458c-829c-cbbc380b252a", "precinctChildName": "二溪派出所" }, { "precinctId": "d5831fd7-fc87-4467-80d2-416695d380ae", "precinctName": "善化分局", "precinctChildId": "ecc6c497-d7b9-40db-9f46-095e4c4bdc30", "precinctChildName": "大內分駐所" }, { "precinctId": "d5831fd7-fc87-4467-80d2-416695d380ae", "precinctName": "善化分局", "precinctChildId": "023f229e-b6b2-42de-bee9-2511ffdcd327", "precinctChildName": "交通分隊" }, { "precinctId": "d5831fd7-fc87-4467-80d2-416695d380ae", "precinctName": "善化分局", "precinctChildId": "829464ef-fe13-4dc1-9f0f-543b552ee345", "precinctChildName": "安定分駐所" }, { "precinctId": "d5831fd7-fc87-4467-80d2-416695d380ae", "precinctName": "善化分局", "precinctChildId": "a0d97191-5b99-416d-add1-59126dc59190", "precinctChildName": "東昌派出所" }, { "precinctId": "d5831fd7-fc87-4467-80d2-416695d380ae", "precinctName": "善化分局", "precinctChildId": "175dbcc7-2692-461e-9196-0777870d2675", "precinctChildName": "茄拔派出所" }, { "precinctId": "d5831fd7-fc87-4467-80d2-416695d380ae", "precinctName": "善化分局", "precinctChildId": "755f1095-f3cd-4f46-ac9c-866120c30b61", "precinctChildName": "海寮派出所" }, { "precinctId": "d5831fd7-fc87-4467-80d2-416695d380ae", "precinctName": "善化分局", "precinctChildId": "29386e4d-2502-4259-b064-386e4b958139", "precinctChildName": "港口派出所" }, { "precinctId": "d5831fd7-fc87-4467-80d2-416695d380ae", "precinctName": "善化分局", "precinctChildId": "b18de6f7-00f2-4c52-9ab9-951a8a8f9011", "precinctChildName": "善化派出所" }, { "precinctId": "d5831fd7-fc87-4467-80d2-416695d380ae", "precinctName": "善化分局", "precinctChildId": "eae8bfcc-46be-43cc-a10f-0400b4038486", "precinctChildName": "新市分駐所" }, { "precinctId": "d5831fd7-fc87-4467-80d2-416695d380ae", "precinctName": "善化分局", "precinctChildId": "af7e1446-4b10-4d7f-a6cc-bbbacdca1b1d", "precinctChildName": "溪美派出所" }, { "precinctId": "d5831fd7-fc87-4467-80d2-416695d380ae", "precinctName": "善化分局", "precinctChildId": "ccc20df6-3026-4ea8-9440-11de96f624a9", "precinctChildName": "潭頂派出所" }, { "precinctId": "d5831fd7-fc87-4467-80d2-416695d380ae", "precinctName": "善化分局", "precinctChildId": "1fe6a90b-0755-4f13-851c-2e3ba6a5ba16", "precinctChildName": "頭社派出所" }, { "precinctId": "d5831fd7-fc87-4467-80d2-416695d380ae", "precinctName": "善化分局", "precinctChildId": "b941c218-9c3c-474f-9751-f7dae71f089a", "precinctChildName": "蘇厝派出所" }, { "precinctId": "d4ef1119-ad0f-44e1-9110-b80b7111c683", "precinctName": "佳里分局", "precinctChildId": "8666ee4f-c41c-4a08-a103-bd68dd382527", "precinctChildName": "七股分駐所" }, { "precinctId": "d4ef1119-ad0f-44e1-9110-b80b7111c683", "precinctName": "佳里分局", "precinctChildId": "5010fa2f-2386-4a13-993a-eb0a6eb88c33", "precinctChildName": "三股派出所" }, { "precinctId": "d4ef1119-ad0f-44e1-9110-b80b7111c683", "precinctName": "佳里分局", "precinctChildId": "6c750a5c-acdc-4156-b5c4-9624b1a85cd1", "precinctChildName": "子龍派出所" }, { "precinctId": "d4ef1119-ad0f-44e1-9110-b80b7111c683", "precinctName": "佳里分局", "precinctChildId": "d141f718-4992-437f-b03a-55b197c5f842", "precinctChildName": "中浯派出所" }, { "precinctId": "d4ef1119-ad0f-44e1-9110-b80b7111c683", "precinctName": "佳里分局", "precinctChildId": "c2f3e808-e7d7-4952-83a2-d3ba4b1b353e", "precinctChildName": "中鹽派出所" }, { "precinctId": "d4ef1119-ad0f-44e1-9110-b80b7111c683", "precinctName": "佳里分局", "precinctChildId": "021ae750-d9a5-4029-b1fa-6f2ec7d8a37e", "precinctChildName": "交通分隊" }, { "precinctId": "d4ef1119-ad0f-44e1-9110-b80b7111c683", "precinctName": "佳里分局", "precinctChildId": "b29e5162-dffe-406d-99ca-77beb6e5f8ec", "precinctChildName": "竹橋派出所" }, { "precinctId": "d4ef1119-ad0f-44e1-9110-b80b7111c683", "precinctName": "佳里分局", "precinctChildId": "1c9b60eb-7fc8-4b52-af0e-8b4304903be9", "precinctChildName": "西港分駐所" }, { "precinctId": "d4ef1119-ad0f-44e1-9110-b80b7111c683", "precinctName": "佳里分局", "precinctChildId": "b634b63c-684e-48bf-bc28-ba064e04259b", "precinctChildName": "佳里派出所" }, { "precinctId": "d4ef1119-ad0f-44e1-9110-b80b7111c683", "precinctName": "佳里分局", "precinctChildId": "7f5f73a8-783d-4be9-b777-b0fcd2ce87ff", "precinctChildName": "佳興派出所" }, { "precinctId": "d4ef1119-ad0f-44e1-9110-b80b7111c683", "precinctName": "佳里分局", "precinctChildId": "1fb0868d-a458-4c79-b330-4297bc8413b4", "precinctChildName": "延平派出所" }, { "precinctId": "d4ef1119-ad0f-44e1-9110-b80b7111c683", "precinctName": "佳里分局", "precinctChildId": "02f08430-a7fb-40ee-b919-cc34bb789e3b", "precinctChildName": "後港派出所" }, { "precinctId": "d4ef1119-ad0f-44e1-9110-b80b7111c683", "precinctName": "佳里分局", "precinctChildId": "dfaee341-520b-4c7d-943d-9eff271c2aac", "precinctChildName": "後營派出所" }, { "precinctId": "d4ef1119-ad0f-44e1-9110-b80b7111c683", "precinctName": "佳里分局", "precinctChildId": "b92d7e6f-3088-44b9-8419-6cd6f429470b", "precinctChildName": "塭內派出所" }, { "precinctId": "6eedc005-f360-4477-a3b2-4ccb76ff11d7", "precinctName": "學甲分局", "precinctChildId": "077f09ca-6632-48e7-afb2-65e5444bfa5a", "precinctChildName": "中梧派出所" }, { "precinctId": "6eedc005-f360-4477-a3b2-4ccb76ff11d7", "precinctName": "學甲分局", "precinctChildId": "b3536b9d-b528-4a0f-bfc5-b52019e454c6", "precinctChildName": "文山派出所" }, { "precinctId": "6eedc005-f360-4477-a3b2-4ccb76ff11d7", "precinctName": "學甲分局", "precinctChildId": "207172de-cc47-4c75-8146-6c664bb8164b", "precinctChildName": "北門分駐所" }, { "precinctId": "6eedc005-f360-4477-a3b2-4ccb76ff11d7", "precinctName": "學甲分局", "precinctChildId": "42a6ba7e-4468-450f-97a6-7a08a14db202", "precinctChildName": "交通分隊" }, { "precinctId": "6eedc005-f360-4477-a3b2-4ccb76ff11d7", "precinctName": "學甲分局", "precinctChildId": "47ade7b2-5f85-4210-8b60-93bcfaf472a1", "precinctChildName": "宅港派出所" }, { "precinctId": "6eedc005-f360-4477-a3b2-4ccb76ff11d7", "precinctName": "學甲分局", "precinctChildId": "c9af7b7f-7ce0-4eb5-b6dd-7f90f08185f8", "precinctChildName": "青鯤鯓派出所" }, { "precinctId": "6eedc005-f360-4477-a3b2-4ccb76ff11d7", "precinctName": "學甲分局", "precinctChildId": "9540e843-a799-443a-a31e-31bf4e1385eb", "precinctChildName": "將軍分駐所" }, { "precinctId": "6eedc005-f360-4477-a3b2-4ccb76ff11d7", "precinctName": "學甲分局", "precinctChildId": "5f870b42-2e02-421c-b351-792a497e52b6", "precinctChildName": "將富派出所" }, { "precinctId": "6eedc005-f360-4477-a3b2-4ccb76ff11d7", "precinctName": "學甲分局", "precinctChildId": "344610b9-2a10-408e-9fe9-4c1b2888c25c", "precinctChildName": "蚵寮派出所" }, { "precinctId": "6eedc005-f360-4477-a3b2-4ccb76ff11d7", "precinctName": "學甲分局", "precinctChildId": "2fd7371c-1516-4ce0-80d8-70ce8065fae2", "precinctChildName": "頂洲派出所" }, { "precinctId": "6eedc005-f360-4477-a3b2-4ccb76ff11d7", "precinctName": "學甲分局", "precinctChildId": "3f6adf95-2647-47c6-b30e-e3926471c3da", "precinctChildName": "學甲派出所" }, { "precinctId": "69dcb369-0401-470b-b703-638583a238e5", "precinctName": "新化分局", "precinctChildId": "727ef33e-ae8a-4b48-8695-f38404e2eac2", "precinctChildName": "山上分駐所" }, { "precinctId": "69dcb369-0401-470b-b703-638583a238e5", "precinctName": "新化分局", "precinctChildId": "1dc2e991-916b-4de5-9831-6f34b646ed9a", "precinctChildName": "左鎮分駐所" }, { "precinctId": "69dcb369-0401-470b-b703-638583a238e5", "precinctName": "新化分局", "precinctChildId": "27171a54-0eb6-4e95-bdd3-94d0baf2515a", "precinctChildName": "交通分隊" }, { "precinctId": "69dcb369-0401-470b-b703-638583a238e5", "precinctName": "新化分局", "precinctChildId": "9b47d5b2-dd83-4301-a7ce-2ec1d3395c9b", "precinctChildName": "那拔派出所" }, { "precinctId": "69dcb369-0401-470b-b703-638583a238e5", "precinctName": "新化分局", "precinctChildId": "f096989c-fe04-4ad8-97bd-8f54fcaf3db1", "precinctChildName": "岡林派出所" }, { "precinctId": "69dcb369-0401-470b-b703-638583a238e5", "precinctName": "新化分局", "precinctChildId": "1c824fc3-7ecb-4086-874b-b372b813d24c", "precinctChildName": "知義派出所" }, { "precinctId": "69dcb369-0401-470b-b703-638583a238e5", "precinctName": "新化分局", "precinctChildId": "29d53938-13c6-4c35-88af-cb6beaf4d481", "precinctChildName": "唪口派出所" }, { "precinctId": "69dcb369-0401-470b-b703-638583a238e5", "precinctName": "新化分局", "precinctChildId": "215f8c85-73d5-4f7e-8a5c-d797dd140a3c", "precinctChildName": "新化派出所" }, { "precinctId": "a0102442-e0d4-4f5a-9a22-e3caed88b315", "precinctName": "歸仁分局", "precinctChildId": "41f4f6a8-1897-4132-8aa2-3a50a479086f", "precinctChildName": "大潭派出所" }, { "precinctId": "a0102442-e0d4-4f5a-9a22-e3caed88b315", "precinctName": "歸仁分局", "precinctChildId": "398f9052-a453-4a75-9474-fb242fe22294", "precinctChildName": "仁德分駐所" }, { "precinctId": "a0102442-e0d4-4f5a-9a22-e3caed88b315", "precinctName": "歸仁分局", "precinctChildId": "7e42aa96-771d-4ead-9329-b76e38b9cda3", "precinctChildName": "太廟派出所" }, { "precinctId": "a0102442-e0d4-4f5a-9a22-e3caed88b315", "precinctName": "歸仁分局", "precinctChildId": "c1de757d-6587-45fe-bbb3-eae59d9ab8f6", "precinctChildName": "文賢派出所" }, { "precinctId": "a0102442-e0d4-4f5a-9a22-e3caed88b315", "precinctName": "歸仁分局", "precinctChildId": "53667e9b-87af-4437-b4d1-6a652ebd6485", "precinctChildName": "交通分隊" }, { "precinctId": "a0102442-e0d4-4f5a-9a22-e3caed88b315", "precinctName": "歸仁分局", "precinctChildId": "41c94af7-f2d0-4ebf-bd84-5045a1d01dd5", "precinctChildName": "依仁派出所" }, { "precinctId": "a0102442-e0d4-4f5a-9a22-e3caed88b315", "precinctName": "歸仁分局", "precinctChildId": "23967198-b710-408d-84e3-9366c6f618d3", "precinctChildName": "保東派出所" }, { "precinctId": "a0102442-e0d4-4f5a-9a22-e3caed88b315", "precinctName": "歸仁分局", "precinctChildId": "b18b77e4-d8a0-4f13-8423-12658e45075a", "precinctChildName": "南雄派出所" }, { "precinctId": "a0102442-e0d4-4f5a-9a22-e3caed88b315", "precinctName": "歸仁分局", "precinctChildId": "395f2f96-ef4f-42cd-9ddc-3e53c2397817", "precinctChildName": "媽廟派出所" }, { "precinctId": "a0102442-e0d4-4f5a-9a22-e3caed88b315", "precinctName": "歸仁分局", "precinctChildId": "6a62cf43-5cd3-4cd6-a392-ddad72827217", "precinctChildName": "德南派出所" }, { "precinctId": "a0102442-e0d4-4f5a-9a22-e3caed88b315", "precinctName": "歸仁分局", "precinctChildId": "c72c5fa8-e630-4688-93e3-7810341fd0b0", "precinctChildName": "龍崎分駐所" }, { "precinctId": "a0102442-e0d4-4f5a-9a22-e3caed88b315", "precinctName": "歸仁分局", "precinctChildId": "aacac3b3-eab7-4845-be02-2761e9f9a25d", "precinctChildName": "龍船派出所" }, { "precinctId": "a0102442-e0d4-4f5a-9a22-e3caed88b315", "precinctName": "歸仁分局", "precinctChildId": "687365b6-9bb5-46c4-95b9-067e0fc2b428", "precinctChildName": "歸仁派出所" }, { "precinctId": "a0102442-e0d4-4f5a-9a22-e3caed88b315", "precinctName": "歸仁分局", "precinctChildId": "2fff6e08-4e74-474c-8db4-4a73815e0326", "precinctChildName": "歸南派出所" }, { "precinctId": "a0102442-e0d4-4f5a-9a22-e3caed88b315", "precinctName": "歸仁分局", "precinctChildId": "1a8c0864-a1c1-4a18-ac50-a5971297a44f", "precinctChildName": "關廟分駐所" }, { "precinctId": "78605852-1117-4f93-bc1c-c9b97e9f486d", "precinctName": "永康分局", "precinctChildId": "c26c4390-63e9-424f-bce8-a27df09f1bfc", "precinctChildName": "大橋派出所" }, { "precinctId": "78605852-1117-4f93-bc1c-c9b97e9f486d", "precinctName": "永康分局", "precinctChildId": "036b1585-ce07-42e1-a218-71a4c829bde8", "precinctChildName": "大灣派出所" }, { "precinctId": "78605852-1117-4f93-bc1c-c9b97e9f486d", "precinctName": "永康分局", "precinctChildId": "aaf19a86-378c-41f1-900f-c8f8075fe0f2", "precinctChildName": "永信派出所" }, { "precinctId": "78605852-1117-4f93-bc1c-c9b97e9f486d", "precinctName": "永康分局", "precinctChildId": "73b7b6d8-3e9c-4158-b1ab-95f9d0bdf6d9", "precinctChildName": "永康派出所" }, { "precinctId": "78605852-1117-4f93-bc1c-c9b97e9f486d", "precinctName": "永康分局", "precinctChildId": "1be4c233-7bf9-4bc5-a700-54d6481772dd", "precinctChildName": "交通分隊" }, { "precinctId": "78605852-1117-4f93-bc1c-c9b97e9f486d", "precinctName": "永康分局", "precinctChildId": "50b0840e-e477-4f49-89d7-252567bdd477", "precinctChildName": "復興派出所" }, { "precinctId": "78605852-1117-4f93-bc1c-c9b97e9f486d", "precinctName": "永康分局", "precinctChildId": "044f2072-53a3-463d-933b-cafad1c4117f", "precinctChildName": "龍潭派出所" }, { "precinctId": "78605852-1117-4f93-bc1c-c9b97e9f486d", "precinctName": "永康分局", "precinctChildId": "776f23ab-164f-4552-b812-824fa85b7629", "precinctChildName": "鹽行派出所" }, { "precinctId": "2ee3d70a-6ff4-42a3-aed6-5ef158ca375f", "precinctName": "玉井分局", "precinctChildId": "d60c7f04-d3a4-4e0c-ba2e-3804548d9db3", "precinctChildName": "北寮派出所" }, { "precinctId": "2ee3d70a-6ff4-42a3-aed6-5ef158ca375f", "precinctName": "玉井分局", "precinctChildId": "7353a2a4-c181-4dcd-9c92-d522d2dabf94", "precinctChildName": "玉山派出所" }, { "precinctId": "2ee3d70a-6ff4-42a3-aed6-5ef158ca375f", "precinctName": "玉井分局", "precinctChildId": "29e41739-51c8-4ee2-9ac9-9a86c332ee0d", "precinctChildName": "玉井派出所" }, { "precinctId": "2ee3d70a-6ff4-42a3-aed6-5ef158ca375f", "precinctName": "玉井分局", "precinctChildId": "9fcac8c6-c13b-4dfc-8159-9504fcd2c743", "precinctChildName": "交通分隊" }, { "precinctId": "2ee3d70a-6ff4-42a3-aed6-5ef158ca375f", "precinctName": "玉井分局", "precinctChildId": "213a082f-69aa-4a4c-95ff-b7fe3161c597", "precinctChildName": "南化分駐所" }, { "precinctId": "2ee3d70a-6ff4-42a3-aed6-5ef158ca375f", "precinctName": "玉井分局", "precinctChildId": "9edf5dab-9668-4a46-abf1-945e7486d2a1", "precinctChildName": "望明派出所" }, { "precinctId": "2ee3d70a-6ff4-42a3-aed6-5ef158ca375f", "precinctName": "玉井分局", "precinctChildId": "3596ee6b-6e56-44be-b392-c24e0f8e08ac", "precinctChildName": "鹿田派出所" }, { "precinctId": "2ee3d70a-6ff4-42a3-aed6-5ef158ca375f", "precinctName": "玉井分局", "precinctChildId": "63c2e0db-6e6f-4f34-8182-a4ae12b6b0a3", "precinctChildName": "楠西分駐所" }, { "precinctId": "cf297877-36e2-4a1d-9c2c-a68f9781445e", "precinctName": "第一分局", "precinctChildId": "c85c3caf-ccc2-4b18-aaa2-78fbd0a228fd", "precinctChildName": "文化派出所" }, { "precinctId": "cf297877-36e2-4a1d-9c2c-a68f9781445e", "precinctName": "第一分局", "precinctChildId": "bb49a991-6a13-471a-a3df-356c47c9ccf6", "precinctChildName": "交通分隊" }, { "precinctId": "cf297877-36e2-4a1d-9c2c-a68f9781445e", "precinctName": "第一分局", "precinctChildId": "cf5e3921-af0a-4467-aece-83aa214cb846", "precinctChildName": "府東派出所" }, { "precinctId": "cf297877-36e2-4a1d-9c2c-a68f9781445e", "precinctName": "第一分局", "precinctChildId": "98eea297-2007-4455-9841-5a1f71653f64", "precinctChildName": "東門派出所" }, { "precinctId": "cf297877-36e2-4a1d-9c2c-a68f9781445e", "precinctName": "第一分局", "precinctChildId": "d71015e7-91b9-4a50-aac0-99e943b970b8", "precinctChildName": "東寧派出所" }, { "precinctId": "cf297877-36e2-4a1d-9c2c-a68f9781445e", "precinctName": "第一分局", "precinctChildId": "becd1416-8059-4fca-b01c-1d4a1feb7a17", "precinctChildName": "後甲派出所" }, { "precinctId": "cf297877-36e2-4a1d-9c2c-a68f9781445e", "precinctName": "第一分局", "precinctChildId": "3035c524-b908-46ba-98b4-60b02b81fe7f", "precinctChildName": "莊敬派出所" }, { "precinctId": "cf297877-36e2-4a1d-9c2c-a68f9781445e", "precinctName": "第一分局", "precinctChildId": "7cd0bab8-7b2c-444e-b6ec-1e2e89b9aa58", "precinctChildName": "德高派出所" }, { "precinctId": "94ecb9b9-48d0-4c0f-bf76-f8b3eac4e4d1", "precinctName": "第二分局", "precinctChildId": "d017a0bf-6495-443d-97e8-94b8abad8165", "precinctChildName": "中正派出所" }, { "precinctId": "94ecb9b9-48d0-4c0f-bf76-f8b3eac4e4d1", "precinctName": "第二分局", "precinctChildId": "78b23858-09cd-43cc-a971-3e66558f68c7", "precinctChildName": "民權派出所" }, { "precinctId": "94ecb9b9-48d0-4c0f-bf76-f8b3eac4e4d1", "precinctName": "第二分局", "precinctChildId": "0123c2e8-d7dc-467c-a0a2-83536ba64095", "precinctChildName": "交通分隊" }, { "precinctId": "94ecb9b9-48d0-4c0f-bf76-f8b3eac4e4d1", "precinctName": "第二分局", "precinctChildId": "08859e44-f869-4e04-b61c-735a0cac29e1", "precinctChildName": "長樂派出所" }, { "precinctId": "94ecb9b9-48d0-4c0f-bf76-f8b3eac4e4d1", "precinctName": "第二分局", "precinctChildId": "7f7b4c90-d955-47b1-9892-366076d8b3dc", "precinctChildName": "南門派出所" }, { "precinctId": "94ecb9b9-48d0-4c0f-bf76-f8b3eac4e4d1", "precinctName": "第二分局", "precinctChildId": "f07e5ca9-2368-436b-b223-af057b120628", "precinctChildName": "海安派出所" }, { "precinctId": "94ecb9b9-48d0-4c0f-bf76-f8b3eac4e4d1", "precinctName": "第二分局", "precinctChildId": "04fbc03e-bff9-49ef-8737-73b918c129fd", "precinctChildName": "博愛派出所" }, { "precinctId": "530ccdae-16c5-4f9d-a22f-1437638c5e85", "precinctName": "第三分局", "precinctChildId": "90609896-37f8-4d42-b05e-3797d33bbd91", "precinctChildName": "土城派出所" }, { "precinctId": "530ccdae-16c5-4f9d-a22f-1437638c5e85", "precinctName": "第三分局", "precinctChildId": "5022620f-7d9a-4929-9b3f-f99fa5c369af", "precinctChildName": "交通分隊" }, { "precinctId": "530ccdae-16c5-4f9d-a22f-1437638c5e85", "precinctName": "第三分局", "precinctChildId": "c39fd4cb-9388-4277-8403-52bf98781341", "precinctChildName": "安中派出所" }, { "precinctId": "530ccdae-16c5-4f9d-a22f-1437638c5e85", "precinctName": "第三分局", "precinctChildId": "6dd76933-c1ca-44a8-a57b-b4bf4299ec94", "precinctChildName": "安佃派出所" }, { "precinctId": "530ccdae-16c5-4f9d-a22f-1437638c5e85", "precinctName": "第三分局", "precinctChildId": "38ecdbf8-b8ca-43c1-97b5-70eacea4f3ee", "precinctChildName": "安南派出所" }, { "precinctId": "530ccdae-16c5-4f9d-a22f-1437638c5e85", "precinctName": "第三分局", "precinctChildId": "df48af7e-39f5-4796-b89b-df93df7d259b", "precinctChildName": "安順派出所" }, { "precinctId": "530ccdae-16c5-4f9d-a22f-1437638c5e85", "precinctName": "第三分局", "precinctChildId": "f8052eeb-8bf3-46d2-b488-75ea37cd6b8c", "precinctChildName": "和順派出所" }, { "precinctId": "530ccdae-16c5-4f9d-a22f-1437638c5e85", "precinctName": "第三分局", "precinctChildId": "00528ceb-6aa4-4d83-bee5-fc3d13f6c44f", "precinctChildName": "長安派出所" }, { "precinctId": "530ccdae-16c5-4f9d-a22f-1437638c5e85", "precinctName": "第三分局", "precinctChildId": "8f1fa348-387e-4f10-9eeb-b23cff12f0ff", "precinctChildName": "海南派出所" }, { "precinctId": "530ccdae-16c5-4f9d-a22f-1437638c5e85", "precinctName": "第三分局", "precinctChildId": "2d6f6776-8c58-4470-8e00-2d0b5ff8228e", "precinctChildName": "顯宮派出所" }, { "precinctId": "775979c5-8e66-449a-9e32-d43788f0d545", "precinctName": "第四分局", "precinctChildId": "23335f7c-e83d-44e8-8a32-b8d0f609a77b", "precinctChildName": "交通分隊" }, { "precinctId": "775979c5-8e66-449a-9e32-d43788f0d545", "precinctName": "第四分局", "precinctChildId": "9d0d8f02-8482-4e4a-ac16-6696073c7f52", "precinctChildName": "安平派出所" }, { "precinctId": "775979c5-8e66-449a-9e32-d43788f0d545", "precinctName": "第四分局", "precinctChildId": "9d7798cc-6373-4a40-9543-c07b9efed227", "precinctChildName": "育平派出所" }, { "precinctId": "775979c5-8e66-449a-9e32-d43788f0d545", "precinctName": "第四分局", "precinctChildId": "6b3edf08-3a53-4239-a5bb-b518bb92d63e", "precinctChildName": "華平派出所" }, { "precinctId": "6771e61c-30ed-4ff5-afc2-293b413b7ced", "precinctName": "第五分局", "precinctChildId": "91a10fc3-7153-46f3-ab61-ef1b031763a8", "precinctChildName": "公園派出所" }, { "precinctId": "6771e61c-30ed-4ff5-afc2-293b413b7ced", "precinctName": "第五分局", "precinctChildId": "347a5a55-90d3-44b7-b494-144476609cd5", "precinctChildName": "北門派出所" }, { "precinctId": "6771e61c-30ed-4ff5-afc2-293b413b7ced", "precinctName": "第五分局", "precinctChildId": "c9e25093-bfc6-4e00-b5b6-ce9a97187588", "precinctChildName": "立人派出所" }, { "precinctId": "6771e61c-30ed-4ff5-afc2-293b413b7ced", "precinctName": "第五分局", "precinctChildId": "3ac6190c-094d-4b1c-8518-acdf80f1b726", "precinctChildName": "交通分隊" }, { "precinctId": "6771e61c-30ed-4ff5-afc2-293b413b7ced", "precinctName": "第五分局", "precinctChildId": "1b7e03ce-f369-4c0e-9a54-34c9a53a4256", "precinctChildName": "和緯派出所" }, { "precinctId": "6771e61c-30ed-4ff5-afc2-293b413b7ced", "precinctName": "第五分局", "precinctChildId": "62ab3a9e-8c57-4e2f-95ef-4c8fe3441a6a", "precinctChildName": "開元派出所" }, { "precinctId": "6771e61c-30ed-4ff5-afc2-293b413b7ced", "precinctName": "第五分局", "precinctChildId": "773d0ba6-d04d-40e7-bab1-a89add694ba6", "precinctChildName": "實踐派出所" }, { "precinctId": "47170e21-d7ad-461a-8982-849fadf7c3b3", "precinctName": "第六分局", "precinctChildId": "29240fd7-5875-4bac-9d3e-e9d7ef660340", "precinctChildName": "大林派出所" }, { "precinctId": "47170e21-d7ad-461a-8982-849fadf7c3b3", "precinctName": "第六分局", "precinctChildId": "d91d09af-d703-4c08-a5f6-2291531d7f63", "precinctChildName": "交通分隊" }, { "precinctId": "47170e21-d7ad-461a-8982-849fadf7c3b3", "precinctName": "第六分局", "precinctChildId": "941b4de2-1383-4142-b741-dfe052bb3613", "precinctChildName": "金華派出所" }, { "precinctId": "47170e21-d7ad-461a-8982-849fadf7c3b3", "precinctName": "第六分局", "precinctChildId": "d5a41cc6-ca8e-4028-a372-c47e3c09720e", "precinctChildName": "喜樹派出所" }, { "precinctId": "47170e21-d7ad-461a-8982-849fadf7c3b3", "precinctName": "第六分局", "precinctChildId": "8030d912-3fca-4272-880a-7be9ce062fb6", "precinctChildName": "新興派出所" }, { "precinctId": "47170e21-d7ad-461a-8982-849fadf7c3b3", "precinctName": "第六分局", "precinctChildId": "80ecc42d-d75f-4150-880a-2122eb938ae3", "precinctChildName": "鯤鯓派出所" }, { "precinctId": "47170e21-d7ad-461a-8982-849fadf7c3b3", "precinctName": "第六分局", "precinctChildId": "cbb2d5e6-d2ee-414a-9bc1-41ad8c3f67d9", "precinctChildName": "鹽埕派出所" }, { "precinctId": "47170e21-d7ad-461a-8982-849fadf7c3b3", "precinctName": "第六分局", "precinctChildId": "080bfda3-0e58-44bc-be28-131275eda492", "precinctChildName": "灣裡派出所" }]; // 分局及所屬派出所、交通分隊清單
+        var CaseProcessDaysSetting = { "mapProcessDays": 9, "mapApplySpaceDays": 7, "pictureProcessDays": 9, "pictureApplySpaceDays": 7, "formProcessDays": 29, "formApplySpaceDays": 30 }; // 案件申請項目處理天數資料
+        var PrecinctIdArray = []; // 自行整理分局資料
+        var ValidateCodeID; //驗證碼ID
+        //var ApplicantID_check = false; //申請人：身分證字號 / 護照號碼 驗證結果
+        //var ClientID_check = false; //當事人：身分證字號 / 護照號碼 驗證結果
+        var ItemNum_check = false; //申請項目：驗證結果
+        var StakeTypeRecord = ""; //是否為當事人須要做紀錄
+
+        $(function () {
+            //跳轉頁面時 鎖定不可回至這頁
+            window.history.forward(1);
+
+            //預設勾選本國人
+            $('input[name="AppInput.ApplicantIsCitizen"][value="true"]').prop("checked", true);
+            $('input[name="AppInput.ClientIsCitizen"][value="true"]').prop("checked", true);
+
+            //處理單位/下拉式選單
+            PrecinctChildInfoLst.forEach(function (e, index) {
+                if (PrecinctIdArray.indexOf(e.precinctId) == -1)
+                    $("#AppInput_TbPrecinctId").append('<option value="' + e.precinctId + '">' + e.precinctName + '</option>');
+                PrecinctIdArray.push(e.precinctId);
+            });
+
+            //處理子單位/下拉式選單
+            $("#AppInput_TbPrecinctId").on("change", function () {
+                $("#AppInput_TbPrecinctChildId").html("");
+                let choice = $("#AppInput_TbPrecinctId").val();
+                PrecinctChildInfoLst.forEach(function (e) {
+                    if (e.precinctId == choice)
+                        $("#AppInput_TbPrecinctChildId").append('<option value="' + e.precinctChildId + '">' + e.precinctChildName + '</option>');
+                })
+            });
+
+            //申請項目：填入日數
+            $('#dayMap').text(CaseProcessDaysSetting.mapApplySpaceDays);
+            $('#dayPicture').text(CaseProcessDaysSetting.pictureApplySpaceDays);
+            $('#dayForm').text(CaseProcessDaysSetting.formApplySpaceDays);
+
+            //驗證碼：十分鐘自動換 (需再優化重製時時間也重製)
+            GetValidateCode();
+            setInterval("GetValidateCode()", "600000");
+
+            //設定自定義錯誤視窗 (不知如何使用!!!!)
+            VerifyApi_ShowCustomMessageWindow = function (Result) {
+                $('#ErrorModalTitle').text("申請送出失敗");
+                $('#ErrorModalMessage').text(Result.custom_result);
+                $('#modal-error').modal('show');
+            };
+
+            //下載文件
+            $('#downloadApplyDoc').click(function () { window.open("/build/document/本局道路交通事故資料申請書-臺南市版.pdf"); });
+            $('#downloadCommissionDoc').click(function () { window.open("/build/document/委託書.doc"); });
+
+            //監聽:同當事人狀態時，將申請人資料自動待入當事人
+            $(".forIsSamePersonListener").change(function () {
+                if (StakeTypeRecord == "A") {
+                    //當事人資料：帶入申請人資料，並鎖定。
+                    ApplyDataPush();
+                }
+            });
+
+            //監聽：與當事人關係
+            $("#AppInput_StakeType").change(function () {
+                //關係判定、觸發動作
+                StakeTypeAction();
+            });
+
+            //監聽：申請人 身分證字號、護照號碼
+            $("#AppInput_ApplicantIdentityNumber").bind("input propertychange", function (event) {
+                let IsCitizen = $('input[name="AppInput.ApplicantIsCitizen"]:checked').val(); //是否為本國人
+                let ID = $("#AppInput_ApplicantIdentityNumber").val(); //輸入的身分證字號或護照號碼
+                let ErrorSpan = $('#ApplicantIdentityNumber'); //錯誤訊息
+                CheckID(IsCitizen, ID, ErrorSpan);
+            });
+
+            //監聽：當事人 身分證字號、護照號碼
+            $("#AppInput_ClientIdentityNumber").bind("input propertychange", function (event) {
+                let IsCitizen = $('input[name="AppInput.ClientIsCitizen"]:checked').val(); //是否為本國人
+                let ID = $("#AppInput_ClientIdentityNumber").val(); //輸入的身分證字號或護照號碼
+                let ErrorSpan = $('#ClientIdentityNumber'); //錯誤訊息
+                CheckID(IsCitizen, ID, ErrorSpan);
+            });
+
+            //監聽：身分證字號/護照號碼 input radio 換值
+            //觸發：身分證字號/護照號碼 input 清空
+            //原因：避免使用者先輸入ID，再換radio選項，繞過監聽ID結果。
+            $('input:radio').change(function () {
+                $(this).parent().parent().parent().find('input:text').val('');
+            })
+
+            //按鍵放開事件
+            $("#AppInput_FormWriter").on('keyup', function (e) {
+                if ($(this).val() == "" || CheckOnlyChineseWord($(this).val())) {
+                    $("#AppInput_FormWriter_Ch").text("");
+                }
+                else {
+                    $("#AppInput_FormWriter_Ch").text("僅可輸入中文字");
+                }
+            });
+        });
+
+        //驗證碼取得器
+        function GetValidateCode() {
+            //清除驗證碼答案
+            $('input[name="code"]').val("");
+            //清除驗證碼答案
+            $.ajax({
+                url: location.pathname + '?handler=ValidateCode',
+                type: 'GET',
+                async: false,
+                success: function (val) {
+                    if (val != null && typeof (val) == 'object' && val.apiresult == "Success") {
+                        let tempEdit = val.data;//拆開data包裝
+
+                        //處理資料
+                        $("input[name='id']").val(val.data.id);
+                        $("img[name='ValidateCode']").attr("src", "data:image/jpeg;base64," + val.data.img);
+                        ValidateCodeID = val.data.id;
+
+                    }
+                },
+                complete: function (jqXHR, textStatus) {
+                    VerifyApi(jqXHR);//檢查回傳值
+                }
+            });
+        }
+
+        //檢查身分證
+        function CheckTwID(idStr) {
+            //依照字母的編號排列，存入陣列備用。
+            let letters = new Array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'W', 'Z', 'I', 'O');
+
+            // 儲存各個乘數
+            let multiply = new Array(1, 9, 8, 7, 6, 5, 4, 3, 2, 1);
+            let nums = new Array(2);
+            let firstChar; var firstNum;
+            let lastNum; var total = 0;
+
+            // 撰寫「正規表達式」。第一個字為英文字母，
+            // 第二個字為1或2，後面跟著8個數字，不分大小寫。
+            let regExpID = /^[a-z](1|2)\d{8}$/i;
+
+            // 使用「正規表達式」檢驗格式
+            if (idStr.search(regExpID) == -1) {
+                // 基本格式錯誤 alert("請仔細填寫身份證號碼");
+                return false;
+            }
+            else {
+                // 取出第一個字元和最後一個數字。
+                firstChar = idStr.charAt(0).toUpperCase(); lastNum = idStr.charAt(9);
+            }
+
+            // 找出第一個字母對應的數字，並轉換成兩位數數字。
+            for (let i = 0; i < 26; i++) {
+                if (firstChar == letters[i]) {
+                    firstNum = i + 10;
+                    nums[0] = Math.floor(firstNum / 10);
+                    nums[1] = firstNum - (nums[0] * 10); break;
+                }
+            }
+
+            // 執行加總計算
+            for (let i = 0; i < multiply.length; i++) {
+                if (i < 2) {
+                    total += nums[i] * multiply[i];
+                }
+                else {
+                    total += parseInt(idStr.charAt(i - 1)) * multiply[i];
+                }
+            }
+
+            //若餘數為0時，則設定其檢查值為0。
+            if (total % 10 == 0) {
+                if ((total % 10) != lastNum) {
+                    return false;
+                }
+            }
+            else {
+                if ((10 - (total % 10)) != lastNum) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        //檢查護照
+        function CheckForeignID(idStr) {
+            //檢查不可大於20位數
+            if (idStr.length < 21) {
+                return true;
+            }
+            else
+                return false;
+        }
+
+        //申請項目：至少選擇一項 驗證
+        function CheckItemNum() {
+            $('#checkItemGroup_error').children().remove();
+            let ItemNumChecked = $('#checkItemGroup').find('input[type=checkbox]:checked').length;
+            if (ItemNumChecked > 0) {
+                return true;
+            }
+            else {
+                $('#checkItemGroup_error').append(`<span>至少選擇一項</span>`);
+                //更新驗證碼
+                GetValidateCode();
+                return false;
+            }
+        }
+
+        //身分證字號/護照號碼：ID 驗證 (IsCitizen 是否為本國人 , ID 輸入框的文字 , ErrorSpan 錯誤訊息span)
+        function CheckID(IsCitizen, ID, ErrorSpan) {
+            let ID_check = false; //檢查結果初始為 錯誤
+            ErrorSpan.children().remove(); //清除錯誤訊息
+
+            if (IsCitizen == undefined) {
+                ErrorSpan.append(`<span>請選擇是否為本國人</span>`);
+            }
+            else if (IsCitizen == 'true') {
+                ID_check = CheckTwID(ID);
+                if (ID_check == false)
+                    ErrorSpan.append(`<span>身分證字號格式錯誤</span>`);
+            }
+            else { //IsCitizen == 'false'
+                ID_check = CheckForeignID(ID);
+                if (ID_check == false)
+                    ErrorSpan.append(`<span>護照號碼不可大於20字</span>`);
+            }
+
+            return ID_check; //回丟檢查結果
+        }
+
+        //申請新案件
+        function FormSubmit() {
+            //申請項目至少一個
+            ItemNum_check = CheckItemNum();
+
+            //申請者ID驗證
+            //let IsCitizen = $('input[name="AppInput.ApplicantIsCitizen"]:checked').val(); //是否為本國人
+            //let ID = $("#AppInput_ApplicantIdentityNumber").val(); //輸入的身分證字號或護照號碼
+            //let ErrorSpan = $('#ApplicantIdentityNumber'); //錯誤訊息
+            //ApplicantID_check = CheckID(IsCitizen, ID, ErrorSpan);
+            //申請者ID驗證
+            //IsCitizen = $('input[name="AppInput.ClientIsCitizen"]:checked').val(); //是否為本國人
+            //ID = $("#AppInput_ClientIdentityNumber").val(); //輸入的身分證字號或護照號碼
+            //ErrorSpan = $('#ClientIdentityNumber'); //錯誤訊息
+            //ClientID_check = CheckID(IsCitizen, ID, ErrorSpan);
+
+            if ($('#form-insert').valid() && ItemNum_check && CheckOnlyChineseWord($("#AppInput_FormWriter").val())) {
+
+                let formData = new FormData(document.getElementById('form-insert'));
+                //同申請人時，select 和 radio 需另外傳值。
+                formData.append("AppInput.StakeType", $('#AppInput_StakeType').val());
+                formData.append("AppInput.ClientIsCitizen", $('input[name="AppInput.ClientIsCitizen"]:checked').val());
+                formData.append("AppInput.ApplicantIsCitizen", $('input[name="AppInput.ApplicantIsCitizen"]:checked').val());
+
+                $.ajax({
+                    //其它ajax參數
+                    dataType: "json",
+                    type: "POST",
+                    url: location.pathname + '?handler=Insert',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function (xhr) {
+                        //取得並建立防止CSRF的參數
+                        xhr.setRequestHeader("XSRF-TOKEN", $('<input name="__RequestVerificationToken" type="hidden" value="CfDJ8ElYgKB_IgVCi_Ksky7x0E9eIDDWuBlRKxS36YuWm_95HYCHpvE-zg9TYno_GSRUoJWjaGApQqd6jih1GXkwZMEdEIGXQ1usmepvyzOR83HKSUKAtPblaLvpaBNwzJBj3d7pSDeDBZ98P1fTc8ft_W8" />').val());
+                    },
+                    success: function (val) {
+                        if (val != null && typeof (val) == 'object' && val.apiresult == "Success") {
+                            let tempEdit = val.data;//拆開data包裝
+
+                            //處理資料
+                            GetValidateCode(); //刷新驗證碼
+                            window.location.href = 'ApplicationFormSubmitted';
+                        }
+                    },
+                    complete: function (jqXHR, textStatus) {
+                        VerifyApi(jqXHR);//檢查回傳值
+                        GetValidateCode();//刷新驗證碼F
+                    }
+                });
+            }
+        }
+
+        //當事人資料：帶入申請人資料，並鎖定。
+        function ApplyDataPush() {
+            //當事人：帶入申請人資料，並鎖定。
+            //$('#AppInput_Stake').val('本人').attr("readonly", true);
+            $('#AppInput_ClientName').val($('#AppInput_ApplicantName').val()).attr("readonly", true);
+            $('#AppInput_ClientBirth').val($('#AppInput_ApplicantBirth').val()).attr("readonly", true);
+            $('#AppInput_ClientIdentityNumber').val($('#AppInput_ApplicantIdentityNumber').val()).attr("readonly", true);
+            $('#AppInput_ClientTelephone').val($('#AppInput_ApplicantTelephone').val()).attr("readonly", true);
+            $('#AppInput_ClientAddress').val($('#AppInput_ApplicantAddress').val()).attr("readonly", true);
+            //注意：disable狀態下無法用form傳值，因此要另寫入值做傳遞。
+            //$('#AppInput_StakeType').val('A').attr("disabled", true);
+            let ApplicantIsCitizenVal = $('input[name="AppInput.ApplicantIsCitizen"]:checked').val();
+            $('input[name="AppInput.ClientIsCitizen"]').filter('[value=' + ApplicantIsCitizenVal + ']').prop('checked', true);
+            $('input[name="AppInput.ClientIsCitizen"]').attr("disabled", true);
+        }
+
+        //當事人資料，解除鎖定，並清除值。
+        function ClientDataClear() {
+            //當事人：解除鎖定，並清除值。
+            $('#AppInput_Stake').val('').attr("readonly", false);
+            $('#AppInput_ClientName').val('').attr("readonly", false);
+            $('#AppInput_ClientBirth').val('').attr("readonly", false);
+            $('#AppInput_ClientIdentityNumber').val('').attr("readonly", false);
+            $('#AppInput_ClientTelephone').val('').attr("readonly", false);
+            $('#AppInput_ClientAddress').val('').attr("readonly", false);
+            //$('#AppInput_StakeType').val('').removeAttr("disabled");
+            $('#AppInput_StakeType').removeAttr("disabled");
+            $('input[name="AppInput.ClientIsCitizen"]').prop('checked', false).removeAttr("disabled");
+        }
+
+        //當事人資料，解除鎖定。
+        function ClientDataOpen() {
+            $('#AppInput_Stake').attr("readonly", false);
+            $('#AppInput_ClientName').attr("readonly", false);
+            $('#AppInput_ClientBirth').attr("readonly", false);
+            $('#AppInput_ClientIdentityNumber').attr("readonly", false);
+            $('#AppInput_ClientTelephone').attr("readonly", false);
+            $('#AppInput_ClientAddress').attr("readonly", false);
+            //$('#AppInput_StakeType').val('').removeAttr("disabled");
+            $('#AppInput_StakeType').removeAttr("disabled");
+            $('input[name="AppInput.ClientIsCitizen"]').removeAttr("disabled");
+        }
+
+        //關係判定、觸發動作
+        function StakeTypeAction() {
+            let StakeType = $("#AppInput_StakeType").val();
+            if (StakeType == "A") {
+                //選擇"本人"。"
+                $('#AppInput_Stake').addClass('d-none');
+                $('#AppInput_Stake').val('');
+                ApplyDataPush();
+                StakeTypeRecord = "A";
+            }
+            else if (StakeTypeRecord == "A" && StakeType == "B") {
+                //原本選"本人"，改選
+                $('#AppInput_Stake').addClass('d-none');
+                $('#AppInput_Stake').val('');
+                ClientDataClear();
+                StakeTypeRecord = "B";
+            }
+            else if (StakeTypeRecord == "A" && StakeType == "C") {
+                //原本選"本人"，改選"與當事人有利害關係"。
+                $('#AppInput_Stake').removeClass('d-none');
+                $('#AppInput_Stake').val('');
+                ClientDataClear();
+                StakeTypeRecord = "C";
+            }
+            else if (StakeType == "B") {
+                //選擇"受當事人委託"。
+                $('#AppInput_Stake').addClass('d-none');
+                $('#AppInput_Stake').val('');
+                ClientDataOpen();
+                StakeTypeRecord = "B";
+            }
+            else {
+                //選擇"與當事人有利害關係" ( StakeType == "C" )
+                $('#AppInput_Stake').removeClass('d-none');
+                $('#AppInput_Stake').val('');
+                ClientDataOpen();
+                StakeTypeRecord = "C";
+            }
+        }
+
+        //僅允許中文字
+        function CheckOnlyChineseWord(text) {
+            return text.match(/^[\u4E00-\u9FFF\u3400-\u4DFF\uF900-\uFAFF]+$/g);
+        }
+
+    </script>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="/lib/behaviour/voice-commands.js"></script>
+    <script src="/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
+
