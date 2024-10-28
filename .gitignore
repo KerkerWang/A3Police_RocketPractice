@@ -10,6 +10,8 @@
 *.userosscache
 *.sln.docstates
 appsettings*.json
+Properties/launchSettings.json
+
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -362,3 +364,4 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/A3Police_241028/Properties/launchSettings.json
